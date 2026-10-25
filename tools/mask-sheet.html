@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Noh Masks — mask sheet</title>
+<style>
+  body{margin:0;padding:12px;background:#ecdfc6;color:#3b2a1c;font:13px/1.5 ui-monospace,Consolas,monospace}
+  canvas{display:block;max-width:100%;box-shadow:0 0 0 1px #8c7457;background:#2b1e13}
+  #log{white-space:pre-wrap}
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+               "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+</head>
+<body>
+<p>Every mask, built and lit the way the AR view lights it. <code>?id=hannya</code> shows one large,
+<code>&amp;yaw=0.5</code> turns it, <code>?save=1</code> writes <b>assets/thumbs/&lt;id&gt;.png</b> through <code>tools/serve.ps1</code>.</p>
+<div id="log"></div>
+<script type="module">
+import * as THREE from 'three';
+import { DEFS } from '../js/masks.js';
+import { buildMask } from '../js/build.js';
+import { setupLook } from '../js/look.js';
+
+const q = new URLSearchParams(location.search);
+const ids = q.get('id') ? [q.get('id')] : Object.keys(DEFS);
+const yaw = parseFloat(q.get('yaw') ?? '0.32'), pitch = parseFloat(q.get('pitch') ?? '0.05');
+const save = q.has('save');
+const cell = save ? 512 : ids.length === 1 ? 900 : 400;
+const cols = save ? 1 : Math.min(ids.length, 4), rows = save ? 1 : Math.ceil(ids.length / cols);
+const log = (t) => { document.getElementById('log').textContent += t + '\n'; };
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(cell * cols, cell * rows);
+renderer.setClearColor(0x000000, 0);
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const look = setupLook(renderer, scene);
+const cam = new THREE.PerspectiveCamera(27, 1, 1, 400);
+cam.position.set(0, 0.5, save ? 74 : 62);
+const holder = new THREE.Group();
+scene.add(holder);
+
+async function save1(id){
+  const c = document.createElement('canvas'); c.width = c.height = cell;
+  c.getContext('2d').drawImage(renderer.domElement, 0, 0, cell, cell, 0, 0, cell, cell);
+  const blob = await new Promise((ok) => c.toBlob(ok, 'image/png'));
+  const res = await fetch(`/__save?name=${encodeURIComponent(`assets/thumbs/${id}.png`)}`, { method: 'POST', body: blob });
+  log(`${id}.png ${res.ok ? 'saved' : 'FAILED ' + res.status}`);
+}
+
+renderer.setScissorTest(true);
+for (let i = 0; i < ids.length; i++){
+  const id = ids[i];
+  const m = buildMask(DEFS[id], { maxAniso: renderer.capabilities.getMaxAnisotropy() });
+  log(`${id}: built in ${m.userData.buildMs} ms`);
+  m.rotation.set(pitch, yaw, 0);
+  m.position.set(0, 0.6, -2);
+  holder.add(m);
+  const x = save ? 0 : (i % cols) * cell, y = save ? 0 : (rows - 1 - Math.floor(i / cols)) * cell;
+  renderer.setViewport(x, y, cell, cell); renderer.setScissor(x, y, cell, cell);
+  if (save) renderer.clear();
+  renderer.render(scene, cam);
+  if (save) await save1(id);
+  holder.remove(m);
+}
+window.__done = true;
+</script>
+</body></html>
