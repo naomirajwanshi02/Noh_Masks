@@ -11,16 +11,16 @@ surprise, then take a photo. Made for ages 8–14.
 
 ## How it works
 
-1. **Camera permission.** A first screen explains why the camera is needed; tapping **Allow camera** shows the browser's permission prompt (skipped if already allowed).
+1. **Camera permission.** A plain first screen asks for the camera (nothing about the activity yet). **Allow camera** shows the browser's prompt; it is skipped if already allowed.
 2. **Scan.** The viewfinder opens. MindAR *image* tracking watches
    the back camera until it sees the card, then shuts down.
-3. **Welcome.** A short card explains what Noh is. Tapping **Turn the camera to me**
+3. **Welcome.** Once the card is found, a short card explains Noh and the activity. Tapping **Allow camera & start**
    starts the selfie camera. This is when the browser asks for camera permission.
 4. **Wear.** MindAR *face* tracking (MediaPipe Face Landmarker) follows your face. The
-   mask hangs from landmark 168, the bridge of the nose, which is the steadiest point.
+   mask is pinned to the whole-face pose (MindAR's faceMatrix, the same fit its face mesh uses), so it stays put when you talk or smile.
    The masks are carved in MindAR's own canonical face units (centimetres), so the eye
    holes sit over your real eyes. Pick a mask from the tray at the bottom.
-5. **Open your mouth.** The tracker's `jawOpen` blendshape sets off each mask's effect.
+5. **Open your mouth.** The tracker's `jawOpen` blendshape sets off each mask's effect. The cue telling you what to do sits at the top of the screen.
    Uso-fuki also reacts to a pout (`mouthPucker`).
 6. **Photo.** The round button saves the mirrored selfie with the mask and a small
    caption plate. You can save it or share it.
@@ -88,7 +88,7 @@ in the same sepia theme as Ramen_Builder:
 | `index.html` | The screens: viewfinder, welcome, mask room, photo. |
 | `js/app.js` | The flow: scan → welcome → camera → tray, plus hints, photo, sound and errors. |
 | `js/scan.js` | Card recognition (MindAR image). |
-| `js/stage.js` | Face AR (MindAR face): the mask on landmark 168, swapping masks, mouth effects, the no-camera preview, photos. |
+| `js/stage.js` | Face AR (MindAR face): the mask pinned to the face pose, swapping masks, mouth effects, the no-camera preview, photos. |
 | `js/masks.js` | The eight mask designs: carving, paint, ORM, relief and extra parts. |
 | `js/sculpt.js` | Carving and painting tools: height features, outline, brushes, scrollwork. |
 | `js/build.js` | Turns a design into meshes and textures. Also has tapered tubes and hair ribbons. |

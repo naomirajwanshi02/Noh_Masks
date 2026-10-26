@@ -2,9 +2,9 @@
 // the face, effects when the mouth opens, and photos. Without a camera (or with
 // ?preview=1) the same mask hangs in a lit "preview" you can turn with a finger.
 //
-// Masks are carved in MindAR's canonical face units (cm). They hang from landmark
-// 168 (the bridge of the nose, the steadiest point), shifted back by that
-// landmark's canonical position, so the carving lines up with the real eyes.
+// Masks are carved in MindAR's canonical face units (cm) and hang from the whole-face
+// pose (faceMatrix), the same rigid fit MindAR's own face mesh uses, so the carving
+// lines up with the real eyes and stays put when you talk or smile.
 
 import * as THREE from 'three';
 import { DEFS } from './masks.js';
@@ -13,10 +13,6 @@ import { setupLook, roomLight } from './look.js';
 import { Effects } from './effects.js';
 import { BY_ID } from './data.js';
 
-const ANCHOR = 168, ANCHOR_POS = new THREE.Vector3(0, 3.271027, 5.236015);
-// MindAR scales every anchor by the tracked face's width (faceScale = rightmost − leftmost
-// landmark x, 15.486 in the canonical model), so one anchor unit is a whole face, not 1 cm.
-const FACE_WIDTH = 15.48619;
 const CACHE_MAX = 3; // built masks kept on the GPU
 // Phones carve with 768 px textures: about half the time of 1024, and still sharp at arm's length.
 const TEX_SIZE = Math.min(screen.width, screen.height) < 600 || (navigator.deviceMemory || 8) <= 4 ? 768 : 1024;
@@ -114,6 +110,8 @@ function readFace(){
   const est = R.mindar.getLatestEstimate();
   const has = !!est;
   if (has !== R.hasFace){ R.hasFace = has; R.onFace?.(has); }
+  R.face.visible = has;
+  if (has){ R.face.matrix.set(...est.faceMatrix); R.face.matrixWorldNeedsUpdate = true; }
   const cats = est?.blendshapes?.categories;
   if (cats){
     let jaw = 0, pk = 0;
@@ -140,8 +138,8 @@ function common(renderer, scene, camera, anchorGroup){
   R.renderer = renderer; R.scene = scene; R.camera = camera;
   R.look = setupLook(renderer, scene);
   R.holder = new THREE.Group();
-  R.holder.position.copy(ANCHOR_POS).negate().divideScalar(FACE_WIDTH);
-  R.holder.scale.setScalar(1 / FACE_WIDTH); // back to centimetres
+  // the masks are carved in the canonical face's centimetres, the same space as MindAR's faceMatrix
+
   anchorGroup.add(R.holder);
   R.effects = new Effects(scene);
 }
@@ -169,12 +167,18 @@ export async function startCamera(container, { onStatus, onFace, onMouth }){
   R.mode = 'camera'; R.container = container; R.onFace = onFace; R.onMouth = onMouth;
   onStatus?.('Loading the face tracker…');
   const { MindARThree } = await import('mindar-face-three');
-  const mindar = new MindARThree({ container, uiLoading: 'no', uiScanning: 'no', uiError: 'no', filterMinCF: 0.0005, filterBeta: 8 });
+  // One Euro filter: a low cut-off keeps a still face steady, a high beta removes lag when you move
+  const mindar = new MindARThree({ container, uiLoading: 'no', uiScanning: 'no', uiError: 'no', filterMinCF: 0.001, filterBeta: 15 });
   mindar._startVideo = hdVideo.bind(mindar);
   mindar.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   R.mindar = mindar;
-  const anchor = mindar.addAnchor(ANCHOR);
-  common(mindar.renderer, mindar.scene, mindar.camera, anchor.group);
+  // Pin the mask to the whole-face pose (the same matrix MindAR's face mesh uses), not to one
+  // landmark: a single point shifts when you talk or smile, the whole-face fit does not.
+  R.face = new THREE.Group();
+  R.face.matrixAutoUpdate = false;
+  R.face.visible = false;
+  mindar.scene.add(R.face);
+  common(mindar.renderer, mindar.scene, mindar.camera, R.face);
   onStatus?.('Starting the selfie camera…');
   try { await mindar.start(); }
   catch (e){ try { mindar.stop(); } catch { /* never started */ } R.mindar = null; throw e || new Error('camera unavailable'); }
