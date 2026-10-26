@@ -12,6 +12,7 @@ import { buildMask, disposeMask } from './build.js';
 import { setupLook, roomLight } from './look.js';
 import { Effects } from './effects.js';
 import { BY_ID } from './data.js';
+import { bindToFace, followFace } from './face-fit.js';
 
 const CACHE_MAX = 3; // built masks kept on the GPU
 // Phones carve with 768 px textures: about half the time of 1024, and still sharp at arm's length.
@@ -28,6 +29,7 @@ const R = {
 function ensureMask(id){
   if (R.cache.has(id)){ const m = R.cache.get(id); R.cache.delete(id); R.cache.set(id, m); return m; }
   const m = buildMask(DEFS[id], { maxAniso: Math.min(8, R.renderer.capabilities.getMaxAnisotropy()), size: TEX_SIZE });
+  if (R.mode === 'camera') bindToFace(m); // tie every vertex to the face landmarks
   R.cache.set(id, m);
   while (R.cache.size > CACHE_MAX){
     const [old, g] = R.cache.entries().next().value;
@@ -111,7 +113,12 @@ function readFace(){
   const has = !!est;
   if (has !== R.hasFace){ R.hasFace = has; R.onFace?.(has); }
   R.face.visible = has;
-  if (has){ R.face.matrix.set(...est.faceMatrix); R.face.matrixWorldNeedsUpdate = true; }
+  if (has){
+    R.face.matrix.set(...est.faceMatrix); R.face.matrixWorldNeedsUpdate = true;
+    // stretch the mask with the live face: its shape, cheeks, jaw
+    if (R.current) followFace(R.current, est.metricLandmarks);
+    if (R.swap?.old) followFace(R.swap.old, est.metricLandmarks);
+  }
   const cats = est?.blendshapes?.categories;
   if (cats){
     let jaw = 0, pk = 0;

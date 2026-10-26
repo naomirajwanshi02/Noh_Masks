@@ -7,6 +7,8 @@
 // so every mask fits the same face, and the texture is a flat projection of the
 // same x/y, so paint lines up with the carving.
 
+import { shellZ, faceZ } from './face-fit.js';
+
 export const SPAN = 22;          // the textures cover x and y from -11 to 11 cm
 export const EYE = { x: 3.18, y: 2.63 };
 
@@ -116,20 +118,17 @@ function compile(f){
   };
 }
 
-// The shared shell every mask is carved from: rounder across than down, rolling
-// back toward the ears and toward the hairline and chin.
-export function baseZ(x, y){
-  const yy = y + 1, ey = Math.max(0, Math.abs(yy) - 7);
-  const zf = 6.15 - 0.0105 * yy * yy - 0.06 * ey * ey;
-  const s = Math.sqrt(Math.max(0, 1 - (x / 8.6) ** 2));
-  return -4 + (zf + 4) * s;
-}
+// The shared shell every mask is carved from: the wearer's face surface (MindAR's
+// canonical face, smoothed), a few millimetres in front of it, so the mask fits tight.
+export const baseZ = shellZ;
 
 export function heightField(features){
   const fns = features.map(compile);
   const n = fns.length;
   const feat = (x, y) => { let d = 0; for (let i = 0; i < n; i++) d += fns[i](x, y); return d; };
-  return { feat, h: (x, y) => baseZ(x, y) + feat(x, y) };
+  // never inside the wearer's face: a smooth max with the face surface + 1.5 mm
+  const h = (x, y) => smax(baseZ(x, y) + feat(x, y), faceZ(x, y) + 0.15, 0.3);
+  return { feat, h };
 }
 
 // ------------------------------------------------------------------ outline
@@ -279,4 +278,8 @@ export function drawStrokes(g, strokes, color, widthScale = 1, alpha = 1){
       }
     }
   }
+}
+function smax(a, b, k){
+  const t = clamp01(0.5 + 0.5 * (a - b) / k);
+  return b + (a - b) * t + k * t * (1 - t);
 }

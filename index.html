@@ -87,10 +87,13 @@
 <!-- ============ 3 · THE MASK ROOM ============ -->
 <div id="hud" class="overlay">
   <div class="hud-top">
+    <div class="hud-left">
     <div class="plate namecard" id="namecard">
       <span class="corner tl" id="ncFig">Fig. 01</span><span class="corner tr" id="ncRole"></span>
       <div class="nc-main"><b id="ncName"></b><span class="jp" id="ncJp"></span></div>
       <div class="nc-blurb" id="ncBlurb"></div>
+    </div>
+    <div class="hint" id="hint" role="status" aria-live="polite"></div>
     </div>
     <div class="iconcol">
       <button class="iconbtn" id="closeBtn" aria-label="Back to the card"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
@@ -98,7 +101,6 @@
       <button class="iconbtn" id="soundBtn" aria-label="Sound"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path id="soundWaves" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
   </div>
-  <div class="hint" id="hint" role="status" aria-live="polite"></div>
 
   <div class="faceguide" id="faceGuide">
     <svg viewBox="0 0 200 260" aria-hidden="true"><ellipse cx="100" cy="130" rx="82" ry="112" fill="none" stroke="#fff8ec" stroke-width="5" stroke-dasharray="14 12"/></svg>

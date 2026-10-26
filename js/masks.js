@@ -327,16 +327,16 @@ const HANNYA = {
     const tooth = new THREE.CapsuleGeometry(0.24, 0.35, 4, 10);
     for (let i = 0; i < 6; i++){
       const x = -1.75 + i * 0.7, y = -3.55;
-      const m = new THREE.Mesh(tooth, ivory); m.position.set(x, y, H.h(x, -3.3) - 0.35); m.scale.set(1.1, 1, 0.8); group.add(m);
+      const m = new THREE.Mesh(tooth, ivory); m.position.set(x, y, H.h(x, y) + 0.05); m.scale.set(1.1, 1, 0.8); group.add(m);
     }
     for (let i = 0; i < 5; i++){
       const x = -1.4 + i * 0.7, y = -5.55;
-      const m = new THREE.Mesh(tooth, ivory); m.position.set(x, y, H.h(x, -5.85) - 0.4); m.scale.set(1.05, 0.85, 0.8); group.add(m);
+      const m = new THREE.Mesh(tooth, ivory); m.position.set(x, y, H.h(x, y) + 0.05); m.scale.set(1.05, 0.85, 0.8); group.add(m);
     }
     const fang = new THREE.ConeGeometry(0.3, 1.55, 16);
     for (const s of [1, -1]){
-      const up = new THREE.Mesh(fang, ivory); up.position.set(s * 2.45, -4.05, H.h(s * 2.45, -3.4) - 0.3); up.rotation.set(0.2, 0, Math.PI - s * 0.08); group.add(up);
-      const lo = new THREE.Mesh(fang, ivory); lo.scale.set(0.9, 0.8, 0.9); lo.position.set(s * 2.05, -5.0, H.h(s * 2.05, -5.8) - 0.3); lo.rotation.set(-0.2, 0, s * 0.1); group.add(lo);
+      const up = new THREE.Mesh(fang, ivory); up.position.set(s * 2.45, -4.05, H.h(s * 2.45, -4.05) + 0.1); up.rotation.set(0.2, 0, Math.PI - s * 0.08); group.add(up);
+      const lo = new THREE.Mesh(fang, ivory); lo.scale.set(0.9, 0.8, 0.9); lo.position.set(s * 2.05, -5.0, H.h(s * 2.05, -5.0) + 0.1); lo.rotation.set(-0.2, 0, s * 0.1); group.add(lo);
     }
   },
   mouth: [0, -4.6, 6.3],

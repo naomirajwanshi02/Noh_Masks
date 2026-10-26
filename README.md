@@ -17,7 +17,7 @@ surprise, then take a photo. Made for ages 8–14.
 3. **Welcome.** Once the card is found, a short card explains Noh and the activity. Tapping **Allow camera & start**
    starts the selfie camera. This is when the browser asks for camera permission.
 4. **Wear.** MindAR *face* tracking (MediaPipe Face Landmarker) follows your face. The
-   mask is pinned to the whole-face pose (MindAR's faceMatrix, the same fit its face mesh uses), so it stays put when you talk or smile.
+   mask is pinned to the whole-face pose (MindAR's faceMatrix) and then *skinned* to the live face landmarks, like a Snapchat lens: it fits your face shape, sits 2–6 mm off the skin, and its mouth and chin move with yours.
    The masks are carved in MindAR's own canonical face units (centimetres), so the eye
    holes sit over your real eyes. Pick a mask from the tray at the bottom.
 5. **Open your mouth.** The tracker's `jawOpen` blendshape sets off each mask's effect. The cue telling you what to do sits at the top of the screen.
@@ -97,6 +97,8 @@ in the same sepia theme as Ramen_Builder:
 | `js/sound.js` | Kotsuzumi drum, hyoshigi clappers and shutter, made with WebAudio. |
 | `js/data.js` | Names, kanji, roles, kid-friendly blurbs and facts. |
 | `tools/mask-sheet.html` | Renders every mask. `?id=hannya&yaw=0.5` shows one up close. `?save=1` rewrites `assets/thumbs/`. |
+| `tools/fit-check.html` | Shows a mask on MindAR's face model (side, front, and with the jaw dropped through the skinning) and prints how far it sits from the face. |
+| `js/face-fit.js` / `js/face-model.js` | The face-fitted shell every mask is carved from, and the skinning that moves each vertex with its nearest face landmarks. |
 | `tools/make-target.html` | Redraws `target.png` from the thumbnails and compiles `targets.mind` (`?build=1`). |
 | `tools/serve.ps1` | A local dev server. It needs no Node or Python; localhost counts as secure for the camera. |
 
