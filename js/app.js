@@ -29,6 +29,39 @@ function toast(html, ms = 3200){
 }
 const buzz = (ms) => { try { navigator.vibrate?.(ms); } catch { /* no vibration */ } };
 
+// ------------------------------------------------------------ 0 · camera permission
+// Ask properly, from a tap, with a reason: browsers show their permission prompt here.
+async function cameraGranted(){
+  try { return (await navigator.permissions?.query({ name: 'camera' }))?.state === 'granted'; } catch { return false; }
+}
+async function openPerm(){
+  S.phase = 'perm';
+  overlay('guide', false);
+  if (await cameraGranted()) return openScan();
+  if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia){
+    $('permStatus').textContent = 'This browser cannot use the camera here. Open the page over https in Safari or Chrome.';
+    $('permBtn').disabled = true;
+  }
+  show('perm');
+}
+async function askCamera(){
+  sound.unlock();
+  $('permBtn').disabled = true;
+  $('permStatus').textContent = 'Waiting for you to tap “Allow”…';
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    stream.getTracks().forEach((t) => t.stop());
+    $('permStatus').textContent = '';
+    show(null);
+    openScan();
+  } catch (err) {
+    console.error(err);
+    $('permStatus').textContent = err?.name === 'NotAllowedError'
+      ? 'The camera was blocked. Tap the “aA” or lock icon next to the address, allow the camera for this site, then tap Allow camera again.'
+      : 'The camera did not start. Close other apps that use the camera and try again.';
+  } finally { $('permBtn').disabled = false; }
+}
+
 // ------------------------------------------------------------ 1 · card
 async function openScan(){
   S.phase = 'scan';
@@ -178,6 +211,7 @@ async function takePhoto(){
 // Sound needs a tap before it can play, so it unlocks on the first touch anywhere.
 addEventListener('pointerdown', () => sound.unlock(), { once: true, capture: true });
 
+$('permBtn').addEventListener('click', askCamera);
 $('scanRetry').addEventListener('click', openScan);
 $('scanSkip').addEventListener('click', () => { stopScan(); overlay('guide', false); openIntro(); });
 $('goBtn').addEventListener('click', () => startMasks(false));
@@ -208,4 +242,4 @@ window.__noh = { S, select, Stage, startMasks };
 
 if (q.has('preview')){ openIntro(); startMasks(true); }
 else if (q.has('demo')) openIntro();
-else openScan();
+else openPerm();

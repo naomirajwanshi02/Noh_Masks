@@ -14,6 +14,9 @@ import { Effects } from './effects.js';
 import { BY_ID } from './data.js';
 
 const ANCHOR = 168, ANCHOR_POS = new THREE.Vector3(0, 3.271027, 5.236015);
+// MindAR scales every anchor by the tracked face's width (faceScale = rightmost − leftmost
+// landmark x, 15.486 in the canonical model), so one anchor unit is a whole face, not 1 cm.
+const FACE_WIDTH = 15.48619;
 const CACHE_MAX = 3; // built masks kept on the GPU
 // Phones carve with 768 px textures: about half the time of 1024, and still sharp at arm's length.
 const TEX_SIZE = Math.min(screen.width, screen.height) < 600 || (navigator.deviceMemory || 8) <= 4 ? 768 : 1024;
@@ -137,7 +140,8 @@ function common(renderer, scene, camera, anchorGroup){
   R.renderer = renderer; R.scene = scene; R.camera = camera;
   R.look = setupLook(renderer, scene);
   R.holder = new THREE.Group();
-  R.holder.position.copy(ANCHOR_POS).negate();
+  R.holder.position.copy(ANCHOR_POS).negate().divideScalar(FACE_WIDTH);
+  R.holder.scale.setScalar(1 / FACE_WIDTH); // back to centimetres
   anchorGroup.add(R.holder);
   R.effects = new Effects(scene);
 }
@@ -198,6 +202,7 @@ export function startPreview(container, { onFace, onMouth } = {}){
   scene.add(anchor);
   common(renderer, scene, camera, anchor);
   R.holder.position.set(0, 0, 0);
+  R.holder.scale.setScalar(1);
   onResize();
   addEventListener('resize', onResize);
   // drag to turn

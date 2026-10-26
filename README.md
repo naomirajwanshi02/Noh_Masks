@@ -11,29 +11,32 @@ surprise, then take a photo. Made for ages 8–14.
 
 ## How it works
 
-1. **Scan.** The page opens in the camera viewfinder. MindAR *image* tracking watches
+1. **Camera permission.** A first screen explains why the camera is needed; tapping **Allow camera** shows the browser's permission prompt (skipped if already allowed).
+2. **Scan.** The viewfinder opens. MindAR *image* tracking watches
    the back camera until it sees the card, then shuts down.
-2. **Welcome.** A short card explains what Noh is. Tapping **Turn the camera to me**
+3. **Welcome.** A short card explains what Noh is. Tapping **Turn the camera to me**
    starts the selfie camera. This is when the browser asks for camera permission.
-3. **Wear.** MindAR *face* tracking (MediaPipe Face Landmarker) follows your face. The
+4. **Wear.** MindAR *face* tracking (MediaPipe Face Landmarker) follows your face. The
    mask hangs from landmark 168, the bridge of the nose, which is the steadiest point.
    The masks are carved in MindAR's own canonical face units (centimetres), so the eye
    holes sit over your real eyes. Pick a mask from the tray at the bottom.
-4. **Open your mouth.** The tracker's `jawOpen` blendshape sets off each mask's effect.
+5. **Open your mouth.** The tracker's `jawOpen` blendshape sets off each mask's effect.
    Uso-fuki also reacts to a pout (`mouthPucker`).
-5. **Photo.** The round button saves the mirrored selfie with the mask and a small
+6. **Photo.** The round button saves the mirrored selfie with the mask and a small
    caption plate. You can save it or share it.
 
 | # | Mask | | Who | Carved and painted with | Mouth effect |
 |---|---|---|---|---|---|
-| 01 | **Kojo / Gojo** | 小尉 | old man | tan aged wood, deep forehead wrinkles, hollow cheeks, an open smile with a few teeth, a **real-hair beard**, moustache and eyebrow tufts | golden ginkgo leaves |
-| 02 | **Chujo** | 中将 | noble man | gofun (shell-white) face, high painted *hikimayu* brows, a knitted sorrowful brow, a fine moustache, blackened teeth (*ohaguro*) | red maple leaves |
-| 03 | **Ko-omote** | 小面 | young woman | white plump face, hair parted in the centre with the three loose strands either side, *hikimayu*, small red lips, black teeth | cherry petals |
-| 04 | **Hannya** | 般若 | female demon | **follows your reference**: red lacquer, gold scrollwork with dark edges, worn black in the recesses, gold eyes, gold horns, gold teeth and fangs, a gaping mouth | demon fire |
-| 05 | **Buaku** | 武悪 | demon (Kyogen) | dark red-brown, crushed scowling brows, bulging gold eyes, a big nose, lips clamped shut (*beshimi*) | angry steam |
-| 06 | **Uso-fuki** | 嘘吹 | comical pout | ruddy, lopsided eyes, bushy uneven brows, puffed cheeks, pursed lips pushed to one side | whistle bubbles |
-| 07 | **Saru** | 猿 | monkey | a red heart-shaped face, deep-set wrinkled eyes, a muzzle, a ring of **real fur strands** | falling persimmons |
-| 08 | **Kitsune** | 狐 | fox (Inari) | glossy white lacquer, long snout, slanted gold eyes, red *kumadori* markings, a gold flame jewel, ears | blue fox-fire |
+| 01 | **Kojo / Gojo** | 小尉 | old man | tan aged wood, deep forehead wrinkles, hollow cheeks, an open smile with a few teeth, a **real-hair beard**, moustache and eyebrow tufts | pine needles (Takasago) |
+| 02 | **Chujo** | 中将 | noble man | gofun (shell-white) face, high painted *hikimayu* brows, a knitted sorrowful brow, a fine moustache, blackened teeth (*ohaguro*) | red maple leaves (Narihira's poem) |
+| 03 | **Ko-omote** | 小面 | young woman | white plump face, hair parted in the centre with the three loose strands either side, *hikimayu*, small red lips, black teeth | cherry petals (play *Yuya*) |
+| 04 | **Hannya** | 般若 | female demon | **follows your reference**: red lacquer, gold scrollwork with dark edges, worn black in the recesses, gold eyes, gold horns, gold teeth and fangs, a gaping mouth | serpent fire (*Dōjōji*) |
+| 05 | **Buaku** | 武悪 | demon (Kyogen) | dark red-brown, crushed scowling brows, bulging gold eyes, a big nose, lips clamped shut (*beshimi*) | roasted beans thrown at him (*Setsubun*) |
+| 06 | **Uso-fuki** | 嘘吹 | comical pout | ruddy, lopsided eyes, bushy uneven brows, puffed cheeks, pursed lips pushed to one side | puffs of air |
+| 07 | **Saru** | 猿 | monkey | a red heart-shaped face, deep-set wrinkled eyes, a muzzle, a ring of **real fur strands** | persimmons (Monkey and Crab tale) |
+| 08 | **Kitsune** | 狐 | fox (Inari) | glossy white lacquer, long snout, slanted gold eyes, red *kumadori* markings, a gold flame jewel, ears | blue fox-fire (kitsunebi) |
+
+Every fact in the app and the reason for each mouth effect is sourced in [SOURCES.md](SOURCES.md).
 
 ### What makes them look real
 

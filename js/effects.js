@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 
 const CELLS = 4; // atlas is 4 × 4
-const F = { sakura: 0, momiji: 1, ginkgo: 2, fire: 3, bubble: 4, orb: 5, persimmon: 6, steam: 7, spark: 8 };
+const F = { sakura: 0, momiji: 1, ginkgo: 2, fire: 3, bubble: 4, orb: 5, persimmon: 6, steam: 7, spark: 8, pine: 9, bean: 10 };
 const ADD = new Set([F.fire, F.orb, F.spark]);
 const TAU = Math.PI * 2;
 
@@ -85,6 +85,20 @@ function atlas(){
     for (let i = 0; i < 8; i++){ const a = (i / 8) * TAU, rr = i % 2 ? r * 0.1 : r * 0.95; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
     g.fill();
   });
+  cell(F.pine, (g, r) => { // a pair of pine needles joined at a little brown sheath
+    g.lineCap = 'round';
+    for (const [a, col] of [[-0.16, '#3f6b2a'], [0.16, '#557f33']]){
+      g.strokeStyle = col; g.lineWidth = 5;
+      g.beginPath(); g.moveTo(0, r * 0.75); g.quadraticCurveTo(Math.sin(a) * r * 0.9, 0, Math.sin(a) * r * 1.6, -r * 0.85); g.stroke();
+    }
+    g.fillStyle = '#6b4a2a'; g.fillRect(-4, r * 0.62, 8, r * 0.24);
+  });
+  cell(F.bean, (g, r) => { // a roasted soybean
+    const gr = g.createRadialGradient(-r * 0.2, -r * 0.2, 2, 0, 0, r * 0.55);
+    gr.addColorStop(0, '#f0d39a'); gr.addColorStop(1, '#b07a3c');
+    g.fillStyle = gr; g.beginPath(); g.ellipse(0, 0, r * 0.55, r * 0.45, 0.3, 0, TAU); g.fill();
+    g.strokeStyle = '#7a4f22'; g.lineWidth = 3; g.beginPath(); g.ellipse(r * 0.08, -r * 0.02, r * 0.2, r * 0.06, 0.3, 0, TAU); g.stroke();
+  });
   const t = new THREE.CanvasTexture(c);
   t.flipY = false;
   t.colorSpace = THREE.NoColorSpace;
@@ -149,7 +163,7 @@ export class Effects {
   }
   // A continuous stream from the mouth while it is open (rate scales with how wide).
   stream(kind, origin, fwd, up, dt, amount){
-    const rate = { fire: 55, steam: 30, bubbles: 14, foxfire: 10, persimmon: 5 }[kind] ?? 26;
+    const rate = { fire: 55, steam: 30, bubbles: 14, foxfire: 10, persimmon: 5, beans: 16, puffs: 16 }[kind] ?? 26;
     this.acc += dt * rate * amount;
     while (this.acc >= 1){ this.acc -= 1; this.one(kind, origin, fwd, up); }
   }
@@ -157,6 +171,21 @@ export class Effects {
     const r = Math.random, v = new THREE.Vector3(), jitter = (k) => new THREE.Vector3((r() - 0.5) * k, (r() - 0.5) * k, (r() - 0.5) * k);
     const at = o.clone().add(jitter(1.2));
     switch (kind){
+      case 'pine':
+        v.copy(fwd).multiplyScalar(14 + r() * 10).add(up.clone().multiplyScalar(3 + r() * 5)).add(jitter(10));
+        this.spawn({ frame: F.pine, p: at, v, life: 3 + r(), size: 1.8, grav: -9, drag: 1.2, spin: (r() - 0.5) * 7, sway: 3 });
+        break;
+      case 'beans': { // thrown at the demon from in front, bouncing off and falling
+        const from = o.clone().addScaledVector(fwd, 30 + r() * 10).add(jitter(18));
+        const to = o.clone().add(up.clone().multiplyScalar(2 + r() * 6)).add(jitter(8));
+        v.subVectors(to, from).multiplyScalar(2.6).add(up.clone().multiplyScalar(4));
+        this.spawn({ frame: F.bean, p: from, v, life: 1.5, size: 1.8, grav: -40, drag: 0.1, spin: (r() - 0.5) * 12 });
+        break;
+      }
+      case 'puffs':
+        v.copy(fwd).multiplyScalar(22 + r() * 10).add(jitter(4));
+        this.spawn({ frame: F.steam, p: at, v, life: 0.9, size: 1.4, grow: 6, grav: 1, drag: 2.2, fade: 0.55 });
+        break;
       case 'sakura': case 'momiji': case 'ginkgo':
         v.copy(fwd).multiplyScalar(14 + r() * 10).add(up.clone().multiplyScalar(4 + r() * 6)).add(jitter(10));
         this.spawn({ frame: F[kind], p: at, v, life: 3.2 + r(), size: kind === 'sakura' ? 1.6 : 2.2, grav: -7, drag: 1.4, spin: (r() - 0.5) * 6, sway: 5 });

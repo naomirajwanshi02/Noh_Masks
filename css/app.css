@@ -153,3 +153,5 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .errbox pre{white-space:pre-wrap;font-size:11px;max-height:30vh;overflow:auto}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.permicon{color:var(--anatomy-red);display:grid;place-items:center;margin-top:-4px}
+.welcome p.small{font-size:13px;color:var(--anatomy-muted);max-width:36ch}

@@ -31,6 +31,22 @@
 <!-- camera + 3D (card scanner, then the selfie mask stage) -->
 <div id="ar"></div>
 
+<!-- ============ 0 · CAMERA PERMISSION ============ -->
+<section id="perm" class="screen dim">
+  <div class="col center">
+    <div class="plate welcome">
+      <span class="corner tl">Fig. 00</span><span class="corner tr">Noh Masks · 能面</span>
+      <div class="permicon" aria-hidden="true"><svg viewBox="0 0 48 48" width="56" height="56"><rect x="5" y="13" width="38" height="27" rx="5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M17 13l3-5h8l3 5" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="26.5" r="7.5" fill="none" stroke="currentColor" stroke-width="3"/></svg></div>
+      <h1>May we use your camera?</h1>
+      <p>Noh Masks needs your camera <b>to find the card</b>, and then <b>to put a mask on your face</b>.</p>
+      <p class="small">The video stays on this phone. Nothing is recorded or sent anywhere, and photos are only saved if you choose to save them.</p>
+      <button class="btn red" id="permBtn">Allow camera</button>
+      <div class="status dark" id="permStatus"></div>
+      <span class="corner bl">step 1 of 3</span><span class="corner br">ages 8–14</span>
+    </div>
+  </div>
+</section>
+
 <!-- ============ 1 · VIEWFINDER: find the card ============ -->
 <div id="guide" class="overlay">
   <div class="scan-top plate"><b>Point your camera at the Noh Masks card</b><span class="cap">The masks appear as soon as it's found</span></div>
@@ -54,7 +70,7 @@
       <span class="corner tl">Fig. 01</span><span class="corner tr">Noh Masks · 能面</span>
       <img class="hero-mask" id="introMask" src="assets/thumbs/hannya.png" alt="">
       <h1>Wear a Noh mask!</h1>
-      <p>Noh is a kind of Japanese theatre that is over <b>650 years old</b>. The actors wear carved wooden masks, and one mask can show many feelings.</p>
+      <p>Noh is a kind of Japanese theatre performed <b>since the 1300s</b>. The actors wear carved wooden masks, and tilting a mask up or down can change its feeling.</p>
       <ol class="steps">
         <li><b>1</b><span>Let us use your <b>selfie camera</b></span></li>
         <li><b>2</b><span>Pick a mask from the bottom</span></li>
