@@ -314,87 +314,49 @@ const KOJO = {
   paint(g){ drawPhoto(g, KOJO.photoData); },
 };
 
-// 4 · Chujo: warm ivory, dark hair along the top and down the temples, dark smudged
-// brows over a frown that rises to the centre, dark almond eyes, a long nose, a
-// drooping moustache, an open mouth with blackened teeth, and a chin tuft.
+// 4 · Chujo: the reference painting, projected and carved: a dark hair band, smudged
+// brows over a sorrowful frown, dark almond eyes, a thin moustache, an open mouth with
+// blackened teeth and a chin tuft.
 const CHUJO = {
   id: 'chujo', seed: 47,
-  outline: { rx: 6.9, top: 10.0, bot: 10.4, chin: 0.32 },
-  look: { skin: '#d6a062', grime: '#5e3612', wear: '#f8e2b8', grimeK: 0.7, wearK: 0.45, mottle: 0.2, rough: 0.52, clearcoat: 0.14, ccRough: 0.5, crack: 0.2, crackScale: 2.4, grain: 0.4, bump: 2.8 },
+  photo: { src: refSrc('chujo'), eyes: [[360, 563], [705, 563]], top: 22, topY: 11.8, chin: 1188, chinY: -9.3, relief: [2.0, 2.4] },
+  outline: { rx: 7.6, top: 12.5, bot: 9.2, chin: 0.3, n: 2.4 },
+  look: { skin: '#d6a062', grime: '#5e3612', wear: '#f8e2b8', rough: 0.5, clearcoat: 0.14, ccRough: 0.5, ...PHOTO_LOOK },
   features: () => [
-    ...forehead(0.3),
-    ...sym(line([[0.35, 4.0], [0.9, 5.15], [2.3, 5.0], [4.5, 4.15]], 0.42, 0.55)),
-    ...sym(line([[0.4, 3.7], [0.75, 5.0]], 0.15, -0.25)),
-    ...eyes({ socket: -0.6, lid: 0.28, rx: 0.52, ry: 0.19 }),
-    ...nose({ a: 2.1, w: 0.62, tip: 1.35, wing: 0.65, tipA: 0.9 }),
-    ...cheeks(0.45, 3.8, -1.3, 1.7), ...sym(blob(5.2, -4.6, 1.2, 1.6, -0.3)),
-    ...mouth({ w: 1.6, open: 0.3, smile: 0.0, depth: 1.0, upper: 0.32, lower: 0.45 }),
-    ...chin(0.35, -7.5, 1.5, 1.2),
+    relief(CHUJO),
+    ...sym(line([[0.35, 4.0], [0.9, 5.0], [2.3, 4.9], [4.5, 4.1]], 0.4, 0.45)),
+    ...eyes({ socket: -0.5, lid: 0.22, rx: 0.5, ry: 0.18 }),
+    ...nose({ a: 1.9, w: 0.65, tip: 1.4, tipY: -1.4, top: 4.4, wing: 0.7, wingX: 1.5, tipA: 0.9, holes: false }),
+    ...cheeks(0.45, 3.9, -1.3, 1.7),
+    line([[-1.5, -4.15], [-0.8, -4.3], [0, -4.35], [0.8, -4.3], [1.5, -4.15]], 0.32, -0.7),
+    blob(0, -7.5, 1.5, 1.2, 0.35),
   ],
-  paint(g){
-    smudge(g, 0, 5.4, 2.6, 2.6, '#f8e0b4', 0.45, 0, 0.2);
-    smudge(g, 0, 0.5, 0.7, 2.6, '#f8e4c0', 0.45, 0, 0.2);
-    both((g) => smudge(g, 4.0, -1.6, 1.7, 1.6, '#c97f4c', 0.28, 0, 0.1))(g);
-    // hair: a dark band across the top, running down the temples
-    const HAIR = [[0, 8.75], [2.8, 8.55], [4.8, 7.8], [5.7, 6.4], [6.0, 4.6], [6.1, 2.4], [9.5, 2.4], [9.5, 12], [0, 12]];
-    both((g) => {
-      g.fillStyle = '#1e1510'; pathOf(g, HAIR, true); g.fill();
-      hairLines(g, (r) => { const x = r() * 5.5; return [[x, 9.4], [x + 0.6, 8.6 - x * 0.2]]; }, 60, '#4a3a2e', 9, 0.03, 0.6);
-    })(g);
-    both((g) => {
-      for (let i = 0; i < 4; i++) smudge(g, 2.6, 6.05 + i * 0.03, 1.6 - i * 0.22, 0.42 - i * 0.05, '#2a201b', 0.7, -0.1, 0.25);
-      g.strokeStyle = 'rgba(255,240,215,.6)'; g.lineWidth = 0.06; pathOf(g, [[0.4, 4.25], [0.95, 5.2], [2.3, 5.1], [4.4, 4.3]]); g.stroke();
-      eyePaint(g, { w: 1.3, h: 0.5, iris: 0.55, irisY: 0.44, color: '#1c120c', line: 0.11, slant: -0.05 });
-      for (let k = 0; k < 2; k++) hatch(g, [[0.3, -3.15 - k * 0.08], [1.2, -3.35 - k * 0.08], [2.1, -3.95 - k * 0.08]], { n: 14, len: 0.55, angle: -1.25, w: 0.045, color: '#24170f', side: -1 });
-    })(g);
-    lips(g, { w: 1.6, smile: 0.0, upper: 0.48, lower: 0.52, color: '#b2453a' });
-    blackTeeth(g, -4.1, 1.28, 8);
-    g.strokeStyle = '#a7b0b5'; g.lineWidth = 0.06; pathOf(g, [[-1.25, -3.98], [0, -4.3], [1.25, -3.98]]); g.stroke();
-    hatch(g, [[-0.35, -5.25], [0.35, -5.25]], { n: 8, len: 1.5, angle: -1.5, w: 0.04, color: '#24170f' });
-    both((g) => { ellipse(g, 6.2, 2.0, 0.17, 0.22); g.fillStyle = '#3a2416'; g.fill(); })(g);
-  },
-  orm(g){
-    both((g) => { g.fillStyle = '#ffa000'; pathOf(g, [[0, 8.75], [2.8, 8.55], [4.8, 7.8], [5.7, 6.4], [6.0, 4.6], [6.1, 2.4], [9.5, 2.4], [9.5, 12], [0, 12]], true); g.fill(); })(g);
-  },
+  paint(g){ drawPhoto(g, CHUJO.photoData); },
 };
 
-// the edge of Ko-omote's hair: from the centre parting down the side of the face
-const KO_HAIR = [[0.08, 9.6], [0.6, 9.0], [2.2, 8.1], [3.8, 6.9], [4.7, 5.0], [5.0, 2.5], [5.1, 0.0], [5.25, -2.4], [5.7, -3.7]];
-// 5 · Ko-omote: ivory, long black hair parted in the middle framing the cheeks with fine
-// light strands, soft high brows, almond eyes, a small red smile with black teeth.
+// 5 · Ko-omote: the reference painting, projected and carved: long black hair parted in
+// the middle with fine light strands, soft high brows, almond eyes, a small red smile
+// with blackened teeth. The purple cords at the sides are painted out.
 const KOOMOTE = {
   id: 'koomote', seed: 31,
-  outline: { rx: 7.0, top: 9.7, bot: 9.8, chin: 0.22 },
-  look: { skin: '#eed0a6', grime: '#93683f', wear: '#fff2de', grimeK: 0.45, wearK: 0.3, mottle: 0.13, rough: 0.5, clearcoat: 0.15, ccRough: 0.45, crack: 0.15, crackScale: 2.6, grain: 0.3, bump: 2.4, sheen: 0 },
+  photo: {
+    src: refSrc('koomote'), eyes: [[455, 590], [785, 590]], top: 12, topY: 11.9, chin: 1220, chinY: -9.5, relief: [1.8, 2.2],
+    patches: [
+      { x: 228, y: 498, rx: 16, ry: 50, from: [150, 640] }, { x: 262, y: 498, rx: 13, ry: 48, from: [272, 420] },
+      { x: 1014, y: 492, rx: 16, ry: 50, from: [1110, 640] }, { x: 984, y: 492, rx: 13, ry: 48, from: [975, 420] },
+    ],
+  },
+  outline: { rx: 8.0, top: 12.55, bot: 9.4, chin: 0.25, n: 2.3 },
+  look: { skin: '#eed0a6', grime: '#93683f', wear: '#fff2de', rough: 0.48, clearcoat: 0.15, ccRough: 0.45, ...PHOTO_LOOK },
   features: () => [
-    ...forehead(0.4), ...nose({ a: 1.75, w: 0.55, tip: 1.1, wing: 0.5, tipA: 0.8 }),
-    ...eyes({ socket: -0.45, lid: 0.16, rx: 0.44, ry: 0.17 }),
-    ...sym(line([[0.6, 4.1], [2.4, 4.7], [4.6, 4.1]], 0.55, 0.22)),
-    ...cheeks(0.85, 3.5, -1.8, 1.9),
-    ...mouth({ w: 1.6, open: 0.16, smile: 0.35, upper: 0.36, lower: 0.48 }), ...chin(0.55, -7.0, 1.6, 1.25),
-    blob(0, -5.6, 1.4, 0.45, -0.18),
+    relief(KOOMOTE),
+    ...eyes({ socket: -0.4, lid: 0.15, rx: 0.44, ry: 0.17 }),
+    ...nose({ a: 1.7, w: 0.6, tip: 1.2, tipY: -1.3, top: 4.4, wing: 0.55, wingX: 1.3, tipA: 0.8, holes: false }),
+    ...cheeks(0.8, 3.5, -1.8, 1.9),
+    line([[-1.6, -3.85], [-0.8, -4.1], [0, -4.15], [0.8, -4.1], [1.6, -3.85]], 0.16, -0.45),
+    blob(0, -7.0, 1.6, 1.25, 0.5),
   ],
-  paint(g){
-    smudge(g, 0, 5.6, 1.4, 2.8, '#fff4e4', 0.5, 0, 0.2);
-    both((g) => smudge(g, 3.7, -1.5, 1.5, 1.2, '#e9a690', 0.3, 0, 0.1))(g);
-    // long hair: from the centre parting, over the temples and down the sides to the cheeks
-    const edge = KO_HAIR;
-    both((g) => {
-      g.fillStyle = '#16100e';
-      pathOf(g, [...edge, [9.5, -3.4], [9.5, 12], [0.08, 12]], true); g.fill();
-      for (let i = 0; i < 3; i++){ // the three fine strands along the hairline
-        g.strokeStyle = rgba('#c9a874', 0.7); g.lineWidth = 0.04;
-        pathOf(g, edge.map(([x, y]) => [x + 0.22 + i * 0.2, y + 0.06 + i * 0.05])); g.stroke();
-      }
-    })(g);
-    both((g) => hikimayu(g, 2.5, 6.3, 0.95, 0.32, 0.1))(g);
-    both((g) => eyePaint(g, { w: 1.05, h: 0.36, iris: 0.4, irisY: 0.34, slant: -0.03, line: 0.08 }))(g);
-    lips(g, { w: 1.6, smile: 0.35, upper: 0.5, lower: 0.55, color: '#c4402f' });
-    blackTeeth(g, -4.0, 1.2);
-  },
-  orm(g){
-    both((g) => { g.fillStyle = '#ff9900'; pathOf(g, [...KO_HAIR, [9.5, -3.7], [9.5, 12], [0.08, 12]], true); g.fill(); })(g);
-  },
+  paint(g){ drawPhoto(g, KOOMOTE.photoData); },
 };
 
 // 6 · Uso-fuki: the reference painting, projected and carved: a bald dome, wavy brow,
