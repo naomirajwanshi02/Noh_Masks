@@ -37,26 +37,24 @@ same stage. Made for ages 8–14.
 | 07 | **Saru** | 猿 | Kyogen | monkey | an olive fur cap with a widow's peak and fur down the sides, a beige face, red-rimmed round eyes, a split muzzle and a wide smile, red ears |
 | 08 | **Kitsune** | 狐 | Kyogen | fox | weathered cream lacquer, a red flame on the brow, red-lined amber eyes, black whiskers, a black nose, a curling red smile, tall ears with red insides |
 
-The look of each mask follows the reference paintings supplied for this project. **Kojo, Chujo, Ko-omote, Hannya, Uso-fuki, Buaku and Kitsune are those paintings themselves** (`assets/refs/`): each is lined up so its pupils sit on the wearer's eyes, projected onto the carved shell from the front, and its light and shade carve the shell too, so from the front the mask is the painting and from the side it has depth. The paper is cut away, the cords are painted out, and Hannya's horns and the fox's ears are separate solids painted from the same picture (`js/photo.js`). Saru is still carved and painted by hand in code. Every fact in the app is sourced in [SOURCES.md](SOURCES.md).
+The look of each mask follows the reference paintings supplied for this project. **All eight masks are those paintings themselves** (`assets/refs/`): each is lined up so its pupils sit on the wearer's eyes, projected onto the carved shell from the front, and its light and shade carve the shell too, so from the front the mask is the painting and from the side it has depth. The paper is cut away, the cords are painted out, and Hannya's horns and the fox's ears are separate solids painted from the same picture (`js/photo.js`). Every fact in the app is sourced in [SOURCES.md](SOURCES.md).
 
 ### What makes them look real
 
-Everything is made in code. No model files are downloaded.
+No 3D model files are downloaded: each mask is built in the browser from its painting.
 
-- **Carving.** Each mask is a height field over an egg-shaped outline. Its features are
-  Gaussian ridges, grooves and blobs: brows, sockets, nose, lips and wrinkles. Pupil
-  and nostril holes are cut right through. The edge rolls over onto a lacquered back,
-  so the mask has real thickness.
-- **Paint (PBR).** Each mask gets a 1024 px texture set: colour, occlusion, roughness,
-  metalness and a normal map. These are measured from the carving. Grime collects in
-  the recesses and paint wears through on the ridges. Old lacquer gets crackle. Wood
-  grain shows under the paint, and gold is truly metallic. The material uses
-  `MeshPhysicalMaterial` with a lacquer clear-coat, filmic tone mapping and a studio
-  environment for reflections.
+- **The surface.** Each mask is a shell carved over the wearer's face (MindAR's face
+  model), a few millimetres off the skin. The painting's light and shade add relief on
+  top, and a few carved features add what a painting cannot: a nose that stands out,
+  bulging eyeballs, cheeks and a mouth set back. Spy-holes are cut where the pupils are.
+- **The paint.** The painting is projected onto the shell from the front, with the
+  paper cut away, into a texture set (colour, occlusion, roughness and a normal map).
+  The material uses `MeshPhysicalMaterial` with a light lacquer clear-coat, filmic tone
+  mapping and a studio environment for reflections.
 - **Room light.** Twice a second the camera image is sampled. Exposure and fill light
   then ease toward the room's brightness and colour, so the mask matches your lighting.
-- **Extra parts.** Horns and fangs are tapered tubes. Kojo's beard and Saru's fur are
-  hundreds of tapered hair ribbons. Kitsune's ears are separate solids.
+- **Extra parts.** Hannya's horns and the fox's ears are separate solids, painted from
+  the same picture.
 
 Phones use 768 px textures, so a mask takes about a second to carve. The three most
 recently used masks are kept ready.
@@ -79,7 +77,7 @@ in the same sepia theme as Ramen_Builder:
   paper.
 - Hold the phone 20–40 cm away, in even light. The card also works on a laptop or
   tablet screen.
-- The compiled target scores **3,609 detection points over 11 scales, with 52 tracking
+- The compiled target scores **3,623 detection points over 11 scales, with 52 tracking
   points**. Ramen_Builder's card scores 3,847 / 58.
 
 ## Files

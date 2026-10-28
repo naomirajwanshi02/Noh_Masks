@@ -40,8 +40,8 @@ Kyogen together as [Nôgaku theatre](https://ich.unesco.org/en/RL/nogaku-theatre
 
 ## Honest notes on the designs
 
-- Each mask's look follows the reference paintings supplied for this project. Kojo, Chujo, Ko-omote, Hannya,
-  Uso-fuki, Buaku and Kitsune use those paintings directly as their surface.
+- Each mask's look follows the reference paintings supplied for this project. All eight masks
+  use those paintings directly as their surface.
 - **Hannya** is red, as used in *Dōjōji* ([Wikipedia](https://en.wikipedia.org/wiki/Hannya)).
 - **Kitsune** is a Kyogen mask type, but this design follows the reference painting, a
   weathered cream fox with red markings in the style of festival fox masks.

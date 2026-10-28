@@ -1,23 +1,18 @@
-// The eight masks, carved and painted in code, after the user's reference paintings:
-// a weathered cream Kitsune with red flames, a red Hannya with black hair, golden horns
-// and ivory fangs, a warm wooden Kojo with a horsehair topknot and goatee, an ivory
-// Chujo with a hair band and blackened teeth, a Ko-omote framed by long black hair,
-// a terracotta Uso-fuki with bulging eyes, a Saru with a fur cap and red-rimmed eyes,
-// and a red lacquered Buaku with a toothy grin.
+// The eight masks, each made from the user's reference painting (js/photo.js): the
+// painting is lined up on the face, projected onto a shell carved to fit the face, and
+// its light and shade carve relief into that shell. The features listed here add the
+// big forms a painting cannot (a nose that stands out, eyeballs, cheeks, a mouth set
+// back), and cut the spy-holes the wearer looks through.
 //
-// Each definition has: an outline, a `look` (paint, grime, wear, gloss), the carving
-// as height features, painting passes on the flat projection (albedo, ORM =
-// occlusion/roughness/metal, relief), and extra parts (ears, horns, teeth, hair).
+// Each definition has: the painting and where its landmarks are (`photo`), an outline,
+// a `look` (gloss and finish), the carving as height features, and extra parts painted
+// from the same picture (Hannya's horns, the fox's ears).
 
-import {
-  EYE, blob, line, hole, sym, ellipse, smudge, brush, pathOf, sampleCurve, rgba, rng,
-} from './sculpt.js';
-import { taperTube, strands, hairMat } from './build.js';
+import { EYE, blob, line, hole, sym } from './sculpt.js';
+import { taperTube } from './build.js';
 import { loadPhoto, drawPhoto, photoUV } from './photo.js';
 
 const E = EYE;
-const flip = (pts) => pts.map(([x, y]) => [-x, y]);
-const both = (f) => (g) => { f(g, 1); g.save(); g.scale(-1, 1); f(g, -1); g.restore(); };
 
 // ------------------------------------------------------------------ shared carving
 function nose({ a = 1.65, w = 0.62, tip = 1.15, tipY = -0.45, top = 4.3, wing = 0.5, wingX = 1.2, holes = true, tipA = 0.55 } = {}){
@@ -36,161 +31,11 @@ function eyes({ socket = -0.32, lid = 0.16, bulge = 0, rx = 0.48, ry = 0.3, rot 
     ...sym(hole(x, y, rx, ry, 0.3, rot)),
   ];
 }
-function mouth({ y = -4.1, w = 1.6, open = 0.13, depth = 0.55, upper = 0.24, lower = 0.3, smile = 0.15 } = {}){
-  return [
-    line([[-w, y + smile], [-w * 0.5, y + 0.02], [0, y], [w * 0.5, y + 0.02], [w, y + smile]], open, -depth, { taper: 0.06 }),
-    line([[-w * 0.95, y + smile + 0.08], [-w * 0.45, y + 0.45], [0, y + 0.36], [w * 0.45, y + 0.45], [w * 0.95, y + smile + 0.08]], 0.26, upper),
-    blob(0, y - 0.48, w * 0.58, 0.34, lower),
-    ...sym(blob(w + 0.18, y + smile, 0.3, 0.3, -0.14)),
-    blob(0, -2.5, 0.32, 0.45, -0.07),
-  ];
-}
 const cheeks = (a = 0.42, x = 3.6, y = -1.3, s = 1.8) => sym(blob(x, y, s, s, a));
-const chin = (a = 0.35, y = -7.1, sx = 1.7, sy = 1.3) => [blob(0, y, sx, sy, a)];
-const forehead = (a = 0.25) => [blob(0, 6.2, 3.6, 2.2, a), ...sym(blob(5.6, 4.6, 1.1, 1.5, -0.18))];
-
-// ------------------------------------------------------------------ shared painting
-function eyePaint(g, { x = E.x, y = E.y, w = 1.15, h = 0.5, iris = 0.55, irisY = 0.42, line: lw = 0.07, color = '#1b1410', iriscol = '#120c09', gold = null, slant = 0 } = {}){
-  g.save(); g.translate(x, y); g.rotate(slant);
-  const shape = [[-w, 0.05], [-w * 0.4, h], [w * 0.35, h * 0.95], [w, 0.12], [w * 0.35, -h * 0.75], [-w * 0.4, -h * 0.7]];
-  if (gold){ g.fillStyle = gold; pathOf(g, shape, true); g.fill(); }
-  g.save(); pathOf(g, shape, true); g.clip();
-  smudge(g, 0, 0, iris, irisY, iriscol, 1, 0, 0.75);
-  g.restore();
-  g.strokeStyle = color; g.lineWidth = lw; pathOf(g, shape, true); g.stroke();
-  brush(g, [[-w * 1.05, 0.08], [-w * 0.4, h * 1.05], [w * 0.4, h], [w * 1.12, 0.18]], lw * 2.6, lw * 0.8, color);
-  g.restore();
-}
-// Hikimayu: the soft high eyebrows painted on court faces.
-function hikimayu(g, x, y, rx = 0.95, ry = 0.36, rot = 0.08){
-  for (let i = 0; i < 3; i++) smudge(g, x, y + i * 0.03, rx * (1 - i * 0.18), ry * (1 - i * 0.15), '#191311', 0.45, rot, 0.25);
-}
-// Court hair: black from the centre parting, strands combed toward the temples.
-function courtHair(g, { line: hl = 7.25, dip = 0.9, strands = 3, loose = true, seed = 4, color = '#141010', mono = false } = {}){
-  const r = rng(seed);
-  const edge = (x) => hl - dip * (Math.abs(x) / 6.5) ** 2 * 1.8;
-  g.fillStyle = color;
-  g.beginPath(); g.moveTo(-9, 12); g.lineTo(9, 12);
-  for (let x = 9; x >= -9; x -= 0.1) g.lineTo(x, edge(x) + 0.05 * Math.cos(x * 9.1));
-  g.closePath(); g.fill();
-  // combed lines in the hair mass
-  g.lineWidth = 0.035;
-  for (let i = 0; i < (mono ? 0 : 70); i++){
-    const s = i % 2 ? 1 : -1, x0 = s * r() * 0.3, x1 = s * (2 + r() * 6);
-    g.strokeStyle = rgba('#3d3330', 0.35 + r() * 0.3);
-    pathOf(g, [[x0, 10], [(x0 + x1) / 2, edge((x0 + x1) / 2) + 1.2 + r()], [x1, edge(x1) + 0.2]]);
-    g.stroke();
-  }
-  // three loose strands either side (the Ko-omote signature), crossing the forehead
-  if (loose) for (const s of [1, -1]) for (let i = 0; i < strands; i++){
-    const xa = s * (0.35 + i * 0.18), xb = s * (4.6 + i * 0.6);
-    brush(g, [[xa, edge(xa) + 0.1], [s * (1.6 + i * 0.4), edge(1.6) - 0.45 - i * 0.12], [s * (3.2 + i * 0.5), edge(3.2) - 0.35 - i * 0.18], [xb, edge(xb) - 0.25]], 0.07, 0.025, color);
-  }
-}
-// Black lacquered teeth (ohaguro) showing between parted lips.
-function blackTeeth(g, y, w, n = 6){
-  g.fillStyle = '#100c0b';
-  ellipse(g, 0, y, w, 0.16); g.fill();
-  g.strokeStyle = 'rgba(80,70,64,.6)'; g.lineWidth = 0.025;
-  for (let i = 1; i < n; i++){ const x = -w + (2 * w * i) / n; g.beginPath(); g.moveTo(x, y + 0.13); g.lineTo(x, y - 0.06); g.stroke(); }
-}
-function lips(g, { y = -4.1, w = 1.6, smile = 0.15, color = '#b5302a', upper = 0.42, lower = 0.42, alpha = 0.92 } = {}){
-  g.fillStyle = rgba(color, alpha);
-  pathOf(g, [[-w, y + smile], [-w * 0.5, y + upper], [-0.12, y + upper * 0.82], [0, y + upper * 0.72], [0.12, y + upper * 0.82], [w * 0.5, y + upper], [w, y + smile],
-    [w * 0.5, y - lower * 0.6], [0, y - lower], [-w * 0.5, y - lower * 0.6]], true);
-  g.fill();
-}
-function hairLines(g, area, n, color, seed, w = 0.03, alpha = 0.6){
-  const r = rng(seed);
-  g.lineWidth = w;
-  for (let i = 0; i < n; i++){
-    const p = area(r);
-    g.strokeStyle = rgba(color, alpha * (0.4 + 0.6 * r()));
-    pathOf(g, p); g.stroke();
-  }
-}
-// Relief helpers: lighter = raised.
-const raise = (g, fn, v = 200) => { g.fillStyle = `rgb(${v},${v},${v})`; g.strokeStyle = `rgb(${v},${v},${v})`; fn(g); };
-
-// ------------------------------------------------------------------ shared parts
-// Carved ears at the sides of the head (Hannya, Kojo, Uso-fuki, Saru, Buaku).
-function ears(group, { H, THREE }, { color, rough = 0.5, clearcoat = 0.2, inner = null, y = 1.4, x = 7.0, size = 1 }){
-  const skin = new THREE.MeshPhysicalMaterial({ color, roughness: rough, clearcoat, clearcoatRoughness: 0.4 });
-  const hollow = new THREE.MeshPhysicalMaterial({ color: inner || color, roughness: rough + 0.1 });
-  hollow.color.multiplyScalar(inner ? 1 : 0.62);
-  for (const s of [1, -1]){
-    const ear = new THREE.Group();
-    const shell = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 20), skin);
-    shell.scale.set(0.42 * size, 1.9 * size, 0.95 * size);
-    const cup = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), hollow);
-    cup.scale.set(0.2 * size, 1.45 * size, 0.62 * size); cup.position.set(s * 0.26 * size, 0.1 * size, 0.08 * size);
-    const lobe = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), skin);
-    lobe.scale.set(0.38 * size, 0.55 * size, 0.6 * size); lobe.position.set(0, -1.65 * size, 0.15 * size);
-    ear.add(shell, cup, lobe);
-    const ex = s * x;
-    ear.position.set(ex, y, H.h(ex * 0.93, y) - 0.9 * size);
-    ear.rotation.set(0, s * 0.95, s * -0.06);
-    group.add(ear);
-  }
-}
-// A row of rounded teeth sitting just in front of the carved mouth.
-function teethRow(group, { H, THREE }, { y, x0, x1, n, w = 0.55, h = 0.7, color = '#e8dcbf', dy = 0 }){
-  const mat = new THREE.MeshPhysicalMaterial({ color, roughness: 0.45, clearcoat: 0.2 });
-  const geo = new THREE.CapsuleGeometry(0.5, 0.6, 4, 10);
-  for (let i = 0; i < n; i++){
-    const x = x0 + ((x1 - x0) * (i + 0.5)) / n, yy = y + dy * ((2 * (i + 0.5)) / n - 1) ** 2;
-    const m = new THREE.Mesh(geo, mat);
-    m.scale.set(w, h * 0.62, 0.55);
-    m.position.set(x, yy, H.h(x, yy) + 0.06);
-    group.add(m);
-  }
-  return mat;
-}
-// Round pale eyeballs ringed in a dark line, the pupil being the actor's spy-hole.
-function eyeball(g, x, y, r, { white = '#d9c49a', ring = '#2a120a', ringW = 0.1, pupil = 0.42, rim = null, rimW = 0.25 } = {}){
-  if (rim){ ellipse(g, x, y, r + rimW, r + rimW * 0.9); g.fillStyle = rim; g.fill(); }
-  const gr = g.createRadialGradient(x - r * 0.3, y + r * 0.3, r * 0.1, x, y, r);
-  gr.addColorStop(0, '#ffffff'); gr.addColorStop(0.25, white); gr.addColorStop(1, rgba(ring, 0.55));
-  ellipse(g, x, y, r, r); g.fillStyle = gr; g.fill();
-  g.lineWidth = ringW; g.strokeStyle = ring; g.stroke();
-  smudge(g, x, y, pupil, pupil, '#0b0604', 1, 0, 0.7);
-}
-// Fine engraved hairs: eyebrows, moustaches and whiskers drawn as hatching.
-function hatch(g, path, { n = 14, len = 0.7, angle = 0.6, w = 0.05, color = '#2a1a10', alpha = 0.85, side = 1 } = {}){
-  const P = sampleCurve(path, n);
-  for (let i = 0; i < P.length; i++){
-    const p = P[i], q = P[Math.min(i + 1, P.length - 1)], o = P[Math.max(i - 1, 0)];
-    const a = Math.atan2(q[1] - o[1], q[0] - o[0]) + side * angle;
-    brush(g, [p, [p[0] + Math.cos(a) * len, p[1] + Math.sin(a) * len]], w * 2, w * 0.4, color, alpha);
-  }
-}
-// Streaks of combed hair running along a tube (v is the length of the tube).
-function hairTexture(THREE, seed){
-  const c = document.createElement('canvas'); c.width = 256; c.height = 512;
-  const g = c.getContext('2d'), r = rng(seed);
-  g.fillStyle = '#b9ad95'; g.fillRect(0, 0, 256, 512);
-  for (let i = 0; i < 900; i++){
-    const x = r() * 256, v = 120 + r() * 120 | 0;
-    g.strokeStyle = r() < 0.5 ? `rgba(${v - 60},${v - 66},${v - 80},.55)` : `rgba(${v + 100},${v + 96},${v + 84},.5)`;
-    g.lineWidth = 0.6 + r() * 1.4;
-    g.beginPath(); g.moveTo(x, 0); g.bezierCurveTo(x + (r() - 0.5) * 18, 170, x + (r() - 0.5) * 18, 340, x + (r() - 0.5) * 10, 512); g.stroke();
-  }
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.repeat.set(3, 1);
-  return t;
-}
-const furPatch = (g, x, y, rx, ry, colors, seed, n = 400) => {
-  const r = rng(seed);
-  for (let i = 0; i < n; i++){
-    const a = r() * 6.283, d = Math.sqrt(r());
-    smudge(g, x + Math.cos(a) * rx * d, y + Math.sin(a) * ry * d, 0.25 + r() * 0.5, 0.2 + r() * 0.4, colors[(r() * colors.length) | 0], 0.25, r() * 3, 0.2);
-  }
-};
 
 // ------------------------------------------------------------------ the masks
-// 1 · Kitsune, 2 · Hannya, 8 · Buaku are the reference paintings themselves, projected
-// onto a shell carved to match them (js/photo.js). Pixel positions below are read off
-// the paintings: the pupils, the top of the head and the chin.
+// Pixel positions below are read off the paintings: the pupils (or, for the masks with
+// close-set painted eyes, the eyes plus an `eyeSpan`), the top of the head and the chin.
 const refSrc = (id) => new URL(`../assets/refs/${id}.jpg`, import.meta.url).href;
 const relief = (def) => ({ k: 'fn', fn: (x, y) => def.photoData.relief(x, y) });
 const PHOTO_LOOK = { grimeK: 0.12, wearK: 0, mottle: 0, crack: 0, grain: 0.08, bump: 1.4 };
@@ -297,7 +142,7 @@ const KOJO = {
   id: 'kojo', seed: 59,
   photo: {
     src: refSrc('kojo'), eyes: [[375, 615], [712, 612]], top: 40, topY: 11.8, chin: 1145, chinY: -9.2, relief: [2.2, 2.8], paper: 20,
-    patches: [{ x: 62, y: 385, rx: 34, ry: 50, from: [20, 640] }, { x: 86, y: 392, rx: 40, ry: 60, from: [20, 640] }, { x: 142, y: 470, rx: 32, ry: 40, from: [20, 640] }, { x: 958, y: 448, rx: 30, ry: 38, from: [1045, 640] }],
+    patches: [{ x: 50, y: 420, rx: 34, ry: 60, from: [20, 640] }, { x: 62, y: 385, rx: 34, ry: 50, from: [20, 640] }, { x: 86, y: 392, rx: 40, ry: 60, from: [20, 640] }, { x: 135, y: 466, rx: 46, ry: 48, from: [20, 640] }, { x: 958, y: 448, rx: 30, ry: 38, from: [1045, 640] }],
   },
   outline: { rx: 8.6, top: 12.5, bot: 11.0, chin: 0.45, n: 3.2 }, // square shoulders hold the hair rolls
   look: { skin: '#c8935c', grime: '#4e2c12', wear: '#efd4a8', rough: 0.58, clearcoat: 0.08, ccRough: 0.55, ...PHOTO_LOOK },
@@ -384,47 +229,32 @@ const USOFUKI = {
   paint(g){ drawPhoto(g, USOFUKI.photoData); },
 };
 
-// 7 · Saru: a dark olive fur cap with a widow's peak and fur all round the face, a
-// wrinkled beige face, big red-rimmed eyes, a small nose, a split muzzle and a wide
-// smile, red ears.
+// 7 · Saru: the reference painting, projected and carved: the olive fur cap with its
+// peak on the brow, big red-rimmed eyes, wrinkles, a small nose over a split muzzle and
+// a wide smile, red ears. Its eyes are painted close together, so it is fitted by the
+// width of the face and its spy-holes sit in the painted pupils. The cords are painted out.
 const SARU = {
   id: 'saru', seed: 113,
-  outline: { rx: 7.4, top: 10.3, bot: 9.6, chin: 0.12, n: 2.15 },
-  look: { skin: '#c79d68', grime: '#3e2e18', wear: '#f3dcb0', grimeK: 0.85, wearK: 0.45, mottle: 0.28, rough: 0.58, clearcoat: 0.15, ccRough: 0.45, crack: 0.15, crackScale: 2.4, grain: 0.4, bump: 3.4 },
-  features: () => [
-    blob(0, 7.4, 4.0, 2.4, 0.3),
-    ...sym(line([[0.3, 4.4], [2.0, 5.25], [4.3, 5.0], [5.6, 3.9]], 0.55, 0.7)),
-    ...[4.7, 5.2, 5.7, 6.2].map((y, i) => line([[-1.5 + i * 0.12, y - 0.3], [0, y + 0.1], [1.5 - i * 0.12, y - 0.3]], 0.1, -0.22)),
-    ...sym(blob(3.05, 2.6, 1.7, 1.5, -0.65)), ...sym(blob(3.05, 2.6, 1.15, 1.15, 0.95)),
-    ...sym(hole(3.05, 2.6, 0.42, 0.42, 0.2)),
-    line([[0, 3.4], [0, 1.2], [0, -0.3]], [0.45, 0.75], [0.15, 0.7]), blob(0, -0.5, 0.9, 0.65, 0.85),
-    ...sym(hole(0.45, -0.95, 0.22, 0.2, 0.25, 0.4)),
-    blob(0, -3.2, 2.9, 1.8, 1.25), line([[0, -1.3], [0, -3.6]], 0.15, -0.35),
-    line([[-3.4, -3.0], [-1.7, -4.2], [0, -4.35], [1.7, -4.2], [3.4, -3.0]], 0.15, -0.65),
-    ...sym(line([[1.9, 0.6], [3.4, 0.1], [4.8, 0.7]], 0.13, -0.22)),
-    ...sym(line([[1.6, -0.6], [3.2, -1.3], [4.6, -0.9]], 0.12, -0.2)),
-    blob(0, -6.4, 2.2, 1.0, 0.4),
-  ],
-  paint(g){
-    // fur cap: a widow's peak on the brow, then down both sides and round the chin
-    const cap = [[0, 6.6], [1.2, 7.6], [3.0, 7.6], [4.9, 6.8], [6.0, 4.8], [6.3, 1.6], [6.2, -1.6], [5.6, -4.4], [4.4, -6.4], [2.6, -7.7], [0, -8.2]];
-    both((g) => {
-      g.fillStyle = '#4a462a';
-      pathOf(g, [...cap, [0, -12], [9.5, -12], [9.5, 12], [0, 12]], true); g.fill();
-      g.save(); pathOf(g, [...cap, [0, -12], [9.5, -12], [9.5, 12], [0, 12]], true); g.clip();
-      furPatch(g, 4.5, 4.0, 5, 7, ['#6b6340', '#3a3720', '#7a6a42', '#2d2c18'], 41, 500);
-      g.restore();
-      smudge(g, 3.05, 2.6, 1.75, 1.55, '#9a3a22', 0.5, 0, 0.5);
-      eyeball(g, 3.05, 2.6, 1.12, { white: '#c9b07a', ring: '#2e1c0e', ringW: 0.13, pupil: 0.48, rim: '#a83e26', rimW: 0.4 });
-      for (let k = 0; k < 2; k++) hatch(g, [[0.5, 4.6 + k * 0.15], [2.0, 5.4 + k * 0.15], [4.3, 5.2 + k * 0.12], [5.4, 4.2]], { n: 14, len: 0.7, angle: 0.9, w: 0.05, color: '#3a2a16' });
-      for (let i = 0; i < 4; i++) brush(g, [[4.0, 0.9 - i * 0.45], [5.2, 1.1 - i * 0.6]], 0.1, 0.02, '#3a2a16', 0.85);
-      g.fillStyle = 'rgba(190,84,56,.8)';
-      pathOf(g, [[0.1, -4.25], [1.7, -4.1], [3.3, -3.05], [1.7, -4.5], [0.1, -4.55]], true); g.fill();
-    })(g);
-    g.strokeStyle = '#3a1c10'; g.lineWidth = 0.1;
-    pathOf(g, [[-3.4, -3.0], [-1.7, -4.2], [0, -4.35], [1.7, -4.2], [3.4, -3.0]]); g.stroke();
+  photo: {
+    src: refSrc('saru'), eyes: [[315, 600], [540, 602]], eyeSpan: 5.3, top: 100, topY: 11.6, chin: 1112, chinY: -9.6, relief: [2.0, 2.6],
+    patches: [
+      { x: 60, y: 426, rx: 16, ry: 20, from: [20, 640] }, { x: 94, y: 426, rx: 14, ry: 17, from: [100, 520] },
+      { x: 792, y: 430, rx: 14, ry: 20, from: [835, 640] }, { x: 764, y: 430, rx: 14, ry: 17, from: [755, 520] },
+    ],
   },
-  extras(group, ctx){ ears(group, ctx, { color: '#9a3c24', rough: 0.55, clearcoat: 0.15, y: 2.0, size: 1.0 }); },
+  outline: { rx: 8.6, top: 12.3, bot: 9.3, chin: 0.12, n: 2.2 },
+  look: { skin: '#cfa978', grime: '#4a3a22', wear: '#f3dcb0', rough: 0.55, clearcoat: 0.15, ccRough: 0.45, ...PHOTO_LOOK },
+  features: () => [
+    relief(SARU),
+    ...sym(line([[0.4, 4.3], [1.9, 5.0], [4.0, 4.8], [5.3, 3.8]], 0.5, 0.55)),
+    ...sym(blob(2.65, 2.62, 1.6, 1.4, -0.45)), ...sym(blob(2.65, 2.62, 1.1, 1.1, 0.9)),
+    ...sym(hole(2.65, 2.6, 0.38, 0.38, 0.2)),
+    ...nose({ a: 0.8, w: 0.6, tip: 1.1, tipY: -2.1, top: 3.4, wing: 0.6, wingX: 1.0, tipA: 0.7, holes: false }),
+    blob(0, -4.3, 2.8, 1.6, 1.1),
+    line([[-3.3, -4.2], [-1.6, -5.2], [0, -5.35], [1.6, -5.2], [3.3, -4.2]], 0.15, -0.5),
+    blob(0, -7.9, 2.0, 1.0, 0.35),
+  ],
+  paint(g){ drawPhoto(g, SARU.photoData); },
 };
 
 export const DEFS = { kojo: KOJO, chujo: CHUJO, koomote: KOOMOTE, hannya: HANNYA, buaku: BUAKU, usofuki: USOFUKI, saru: SARU, kitsune: KITSUNE };
