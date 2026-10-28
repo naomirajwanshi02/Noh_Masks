@@ -18,8 +18,8 @@ export function setupLook(renderer, scene){
   const rig = new THREE.Group();
   rig.name = 'lights';
   const hemi = new THREE.HemisphereLight('#fff6e8', '#4a3424', 0.4);
-  const key = new THREE.DirectionalLight('#fff3e0', 1.5);
-  key.position.set(-0.6, 0.9, 0.45);
+  const key = new THREE.DirectionalLight('#fff3e0', 1.8);
+  key.position.set(-0.45, 1.0, 0.42); // from above, so brows, cheeks and mouths cast shadow
   const rim = new THREE.DirectionalLight('#ffe2c0', 0.7);
   rim.position.set(0.7, 0.25, -0.2);
   const fill = new THREE.DirectionalLight('#dfe8ff', 0.25);

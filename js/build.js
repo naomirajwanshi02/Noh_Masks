@@ -138,7 +138,8 @@ function paint(def, H, O, holes, size){
       const cv = cav(gu, gv), rd = ridge(gu, gv), ocl = ao(gu, gv), mt = mot(gu, gv);
       const metal = md[o + 2] / 255, keep = md[o] / 255; // R before the AO pass: paint that stays clean (glossy hair)
       // paint: mottled, darker in recesses, worn on ridges
-      const g = smooth(0.015, 0.42, cv) * P.grimeK * (1 - 0.6 * metal) * (1 - 0.7 * keep);
+      // grime in fine creases and, more softly, in broad hollows (eye sockets, under the brows)
+      const g = Math.min(1, smooth(0.015, 0.42, cv) + 0.55 * smooth(0.06, 0.9, ocl)) * P.grimeK * (1 - 0.6 * metal) * (1 - 0.7 * keep);
       const patch = vnoise(x * 1.7, y * 1.7, def.seed + 5);
       const w = smooth(0.012, 0.1, rd) * smooth(0.35, 0.75, patch) * P.wearK * (1 - keep);
       const speck = 1 - 0.07 * R() * R();

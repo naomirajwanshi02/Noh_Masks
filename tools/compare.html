@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Noh and Kyogen Masks — compare with references</title>
+<style>body{margin:0;padding:12px;background:#ecdfc6;font:13px ui-monospace,Consolas,monospace} canvas{display:block;max-width:100%}</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+               "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script></head>
+<body>
+<p>Each mask (front, lit as in AR) beside its reference painting from <code>tools/refs/&lt;id&gt;.jpg</code> (kept out of git). <code>?id=saru</code></p>
+<script type="module">
+import * as THREE from 'three';
+import { DEFS } from '../js/masks.js';
+import { buildMask } from '../js/build.js';
+import { setupLook } from '../js/look.js';
+
+const ids = new URLSearchParams(location.search).get('id')?.split(',') || Object.keys(DEFS);
+const S = 420;
+const out = document.createElement('canvas');
+out.width = S * 2 * Math.min(2, ids.length); out.height = S * Math.ceil(ids.length / 2);
+document.body.appendChild(out);
+const o = out.getContext('2d');
+o.fillStyle = '#f2ebe0'; o.fillRect(0, 0, out.width, out.height);
+const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+r.setSize(S, S); r.setClearColor(0xf2ebe0, 1);
+const scene = new THREE.Scene();
+setupLook(r, scene);
+const cam = new THREE.PerspectiveCamera(27, 1, 1, 400);
+cam.position.set(0, 0.8, 58);
+for (let i = 0; i < ids.length; i++){
+  const id = ids[i], x = (i % 2) * S * 2, y = Math.floor(i / 2) * S;
+  const img = new Image(); img.src = `refs/${id}.jpg`;
+  await img.decode().catch(() => {});
+  if (img.naturalWidth){ const k = Math.min(S / img.naturalWidth, S / img.naturalHeight); o.drawImage(img, x + (S - img.naturalWidth * k) / 2, y + (S - img.naturalHeight * k) / 2, img.naturalWidth * k, img.naturalHeight * k); }
+  const m = buildMask(DEFS[id]);
+  scene.add(m); r.render(scene, cam); scene.remove(m);
+  o.drawImage(r.domElement, x + S, y);
+  o.fillStyle = '#3b2a1c'; o.fillText(id, x + 6, y + 14);
+}
+window.__done = true;
+</script></body></html>

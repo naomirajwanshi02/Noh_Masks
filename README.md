@@ -79,7 +79,7 @@ in the same sepia theme as Ramen_Builder:
   paper.
 - Hold the phone 20–40 cm away, in even light. The card also works on a laptop or
   tablet screen.
-- The compiled target scores **3,556 detection points over 11 scales, with 45 tracking
+- The compiled target scores **3,570 detection points over 11 scales, with 48 tracking
   points**. Ramen_Builder's card scores 3,847 / 58.
 
 ## Files
@@ -97,6 +97,7 @@ in the same sepia theme as Ramen_Builder:
 | `js/sound.js` | Kotsuzumi drum, hyoshigi clappers and shutter, made with WebAudio. |
 | `js/data.js` | Names, kanji, roles, kid-friendly blurbs and facts. |
 | `tools/mask-sheet.html` | Renders every mask. `?id=hannya&yaw=0.5` shows one up close. `?save=1` rewrites `assets/thumbs/`. |
+| `tools/compare.html` | Renders each mask beside its reference painting from `tools/refs/<id>.jpg` (the references are kept out of git). |
 | `tools/fit-check.html` | Shows a mask on MindAR's face model (side, front, and with the jaw dropped through the skinning) and prints how far it sits from the face. |
 | `js/face-fit.js` / `js/face-model.js` | The face-fitted shell every mask is carved from, and the skinning that moves each vertex with its nearest face landmarks. |
 | `tools/make-target.html` | Redraws `target.png` from the thumbnails and compiles `targets.mind` (`?build=1`). |
