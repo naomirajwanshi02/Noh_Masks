@@ -294,7 +294,7 @@ export function buildMask(def, { maxAniso = 4, size = TEX } = {}){
   const amap = texture(tex.alpha, false, 1);
   const front = new THREE.MeshPhysicalMaterial({
     map, normalMap: nmap, roughnessMap: orm, metalnessMap: orm, aoMap: orm, aoMapIntensity: 0.85,
-    roughness: 1, metalness: 1, alphaTest: 0.5,
+    roughness: 1, metalness: 1, alphaTest: 0.5, envMapIntensity: L.env ?? 0.55,
     clearcoat: L.clearcoat ?? 0.15, clearcoatRoughness: L.ccRough ?? 0.4,
     sheen: L.sheen ?? 0, sheenColor: new THREE.Color(L.sheenColor || '#ffffff'), sheenRoughness: 0.6,
   });

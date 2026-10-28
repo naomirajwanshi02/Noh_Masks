@@ -40,11 +40,10 @@ Kyogen together as [Nôgaku theatre](https://ich.unesco.org/en/RL/nogaku-theatre
 
 ## Honest notes on the designs
 
-- **Hannya** is painted red with gold scrollwork to follow the reference image.
-  Red Hannya are real ([Wikipedia](https://en.wikipedia.org/wiki/Hannya)). The gold
-  scrollwork is decoration from the reference, not part of a classical Noh Hannya.
-- **Kitsune** is a Kyogen mask type, but this design follows the popular white Inari
-  festival fox, with red markings and gold.
+- Each mask's look follows the reference paintings supplied for this project.
+- **Hannya** is red, as used in *Dōjōji* ([Wikipedia](https://en.wikipedia.org/wiki/Hannya)).
+- **Kitsune** is a Kyogen mask type, but this design follows the reference painting, a
+  weathered cream fox with red markings in the style of festival fox masks.
   Museum Kyogen fox masks (for *Tsurigitsune*) look different: carved wood in natural
   tones, some with bared fangs or folded ears, so this one is not a faithful Kyogen mask.
 - The masks are made in code. They are close interpretations, not copies of

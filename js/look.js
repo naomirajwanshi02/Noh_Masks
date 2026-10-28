@@ -9,7 +9,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 export function setupLook(renderer, scene){
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 0.85;
   const pmrem = new THREE.PMREMGenerator(renderer);
   const env = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
   pmrem.dispose();
@@ -18,7 +18,7 @@ export function setupLook(renderer, scene){
   const rig = new THREE.Group();
   rig.name = 'lights';
   const hemi = new THREE.HemisphereLight('#fff6e8', '#4a3424', 0.4);
-  const key = new THREE.DirectionalLight('#fff3e0', 2.4);
+  const key = new THREE.DirectionalLight('#fff3e0', 1.5);
   key.position.set(-0.6, 0.9, 0.45);
   const rim = new THREE.DirectionalLight('#ffe2c0', 0.7);
   rim.position.set(0.7, 0.25, -0.2);
@@ -34,7 +34,7 @@ export function roomLight(look, renderer){
   const c = document.createElement('canvas');
   c.width = c.height = 16;
   const g = c.getContext('2d', { willReadFrequently: true });
-  let target = { exp: 1.05, tint: new THREE.Color('#fff6e8') }, last = 0;
+  let target = { exp: 0.88, tint: new THREE.Color('#fff6e8') }, last = 0;
   return (video, now, dt) => {
     if (video && video.readyState >= 2 && now - last > 500){
       last = now;
@@ -46,7 +46,7 @@ export function roomLight(look, renderer){
         const n = d.length / 4; r /= n * 255; gg /= n * 255; b /= n * 255;
         const lum = 0.2126 * r + 0.7152 * gg + 0.0722 * b;
         // a dim room gets a dimmer mask, never black; a bright room a brighter one
-        target.exp = THREE.MathUtils.clamp(0.55 + lum * 1.35, 0.6, 1.35);
+        target.exp = THREE.MathUtils.clamp(0.48 + lum * 1.15, 0.55, 1.15);
         const m = Math.max(r, gg, b, 1e-3);
         target.tint.setRGB(0.55 + 0.45 * r / m, 0.55 + 0.45 * gg / m, 0.55 + 0.45 * b / m);
       } catch { /* video not ready */ }

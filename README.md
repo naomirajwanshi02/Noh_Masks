@@ -28,16 +28,16 @@ same stage. Made for ages 8–14.
 
 | # | Mask | | Theatre | Who | Carved and painted with |
 |---|---|---|---|---|---|
-| 01 | **Kojo / Gojo** | 小尉 | Noh | old man | tan aged wood, deep forehead wrinkles, hollow cheeks, an open smile with a few teeth, a **real-hair beard**, moustache and eyebrow tufts |
-| 02 | **Chujo** | 中将 | Noh | noble man | gofun (shell-white) face, high painted *hikimayu* brows, a knitted sorrowful brow, a fine moustache, blackened teeth (*ohaguro*) |
-| 03 | **Ko-omote** | 小面 | Noh | young woman | white plump face, hair parted in the centre with the three loose strands either side, *hikimayu*, small red lips, black teeth |
-| 04 | **Hannya** | 般若 | Noh | female demon | **follows your reference**: red lacquer, gold scrollwork with dark edges, worn black in the recesses, gold eyes, gold horns, gold teeth and fangs, a gaping mouth |
-| 05 | **Buaku** | 武悪 | Kyogen | demon | dark red-brown, crushed scowling brows, bulging gold eyes, a big nose, lips clamped shut |
-| 06 | **Uso-fuki** | 嘯吹 | Kyogen | comical pout | ruddy, lopsided eyes, bushy uneven brows, puffed cheeks, pursed lips pushed to one side |
-| 07 | **Saru** | 猿 | Kyogen | monkey | a red heart-shaped face, deep-set wrinkled eyes, a muzzle, a ring of fur strands |
-| 08 | **Kitsune** | 狐 | Kyogen | fox | glossy white lacquer, long snout, slanted gold eyes, red markings, a gold flame jewel, ears (styled like a festival Inari fox, see SOURCES.md) |
+| 01 | **Kojo / Gojo** | 小尉 | Noh | old man | warm aged wood, horsehair swept up into a topknot with a pin, engraved sloping brows, wavy forehead, narrow eyes, an open red mouth, a small goatee, ears with purple cords |
+| 02 | **Chujo** | 中将 | Noh | noble man | warm ivory, a dark hair band, smudged brows over a sorrowful frown, almond eyes, a thin moustache, an open mouth with blackened teeth, a chin tuft |
+| 03 | **Ko-omote** | 小面 | Noh | young woman | ivory, long black hair parted in the middle and framing the face with fine light strands, soft high brows, a small red smile with black teeth, purple cords |
+| 04 | **Hannya** | 般若 | Noh | female demon | bright red, black hair round a widow's peak, golden horns, ears, yellow eyes, a grinning mouth with ivory teeth and four fangs |
+| 05 | **Buaku** | 武悪 | Kyogen | demon | glossy red-orange lacquer, a bald dome, heavy drooping brows, sunken eyes, a bulbous nose, puffed cheeks, a clenched toothy grin, ears with cords |
+| 06 | **Uso-fuki** | 嘯吹 | Kyogen | comical pout | speckled terracotta, a bald dome, wavy brow, engraved arched brows, huge bulging eyes, a bulbous nose, a little round pursed mouth, ears with cords |
+| 07 | **Saru** | 猿 | Kyogen | monkey | an olive fur cap with a widow's peak and fur down the sides, a beige face, red-rimmed round eyes, a split muzzle and a wide smile, red ears |
+| 08 | **Kitsune** | 狐 | Kyogen | fox | weathered cream lacquer, a red flame on the brow, red-lined amber eyes, black whiskers, a black nose, a curling red smile, tall ears with red insides |
 
-Every fact in the app is sourced in [SOURCES.md](SOURCES.md).
+The look of each mask follows the reference paintings supplied for this project. Every fact in the app is sourced in [SOURCES.md](SOURCES.md).
 
 ### What makes them look real
 
