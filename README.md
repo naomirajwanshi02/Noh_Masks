@@ -1,9 +1,10 @@
-# 👺 Noh Masks: a scan-to-wear WebAR mask room
+# 👺 Noh and Kyogen Masks: a scan-to-wear WebAR mask room
 
-Point your phone at the printed **Noh Masks card**. When the card is recognised the
-mask room opens. Turn the camera round to yourself, pick one of eight traditional
-Japanese masks from the bottom row, and wear it on your face. Open your mouth for a
-surprise, then take a photo. Made for ages 8–14.
+Point your phone at the printed **Noh & Kyogen Masks card**. When the card is recognised
+the mask room opens. Turn the camera round to yourself, pick one of eight traditional
+Japanese masks from the bottom row, and wear it on your face, then take a photo.
+Four masks come from **Noh** and four from **Kyogen**, the comic plays performed on the
+same stage. Made for ages 8–14.
 
 **Play locally:** `http://localhost:8123/`
 **Without the card:** `?demo=1` · **Without any camera:** `?preview=1`
@@ -14,29 +15,29 @@ surprise, then take a photo. Made for ages 8–14.
 1. **Camera permission.** A plain first screen asks for the camera (nothing about the activity yet). **Allow camera** shows the browser's prompt; it is skipped if already allowed.
 2. **Scan.** The viewfinder opens. MindAR *image* tracking watches
    the back camera until it sees the card, then shuts down.
-3. **Welcome.** Once the card is found, a short card explains Noh and the activity. Tapping **Allow camera & start**
+3. **Welcome.** Once the card is found, a short card explains Noh, Kyogen and the activity. Tapping **Allow camera & start**
    starts the selfie camera. This is when the browser asks for camera permission.
 4. **Wear.** MindAR *face* tracking (MediaPipe Face Landmarker) follows your face. The
    mask is pinned to the whole-face pose (MindAR's faceMatrix) and then *skinned* to the live face landmarks, like a Snapchat lens: it fits your face shape, sits 2–6 mm off the skin, and its mouth and chin move with yours.
    The masks are carved in MindAR's own canonical face units (centimetres), so the eye
    holes sit over your real eyes. Pick a mask from the tray at the bottom.
-5. **Open your mouth.** The tracker's `jawOpen` blendshape sets off each mask's effect. The cue telling you what to do sits at the top of the screen.
-   Uso-fuki also reacts to a pout (`mouthPucker`).
+5. **Tilt.** The cue under the name panel invites you to tilt your head up and down, the
+   way Noh actors change a mask's mood (*terasu* / *kumorasu*).
 6. **Photo.** The round button saves the mirrored selfie with the mask and a small
    caption plate. You can save it or share it.
 
-| # | Mask | | Who | Carved and painted with | Mouth effect |
+| # | Mask | | Theatre | Who | Carved and painted with |
 |---|---|---|---|---|---|
-| 01 | **Kojo / Gojo** | 小尉 | old man | tan aged wood, deep forehead wrinkles, hollow cheeks, an open smile with a few teeth, a **real-hair beard**, moustache and eyebrow tufts | pine needles (Takasago) |
-| 02 | **Chujo** | 中将 | noble man | gofun (shell-white) face, high painted *hikimayu* brows, a knitted sorrowful brow, a fine moustache, blackened teeth (*ohaguro*) | red maple leaves (Narihira's poem) |
-| 03 | **Ko-omote** | 小面 | young woman | white plump face, hair parted in the centre with the three loose strands either side, *hikimayu*, small red lips, black teeth | cherry petals (play *Yuya*) |
-| 04 | **Hannya** | 般若 | female demon | **follows your reference**: red lacquer, gold scrollwork with dark edges, worn black in the recesses, gold eyes, gold horns, gold teeth and fangs, a gaping mouth | serpent fire (*Dōjōji*) |
-| 05 | **Buaku** | 武悪 | demon (Kyogen) | dark red-brown, crushed scowling brows, bulging gold eyes, a big nose, lips clamped shut (*beshimi*) | roasted beans thrown at him (*Setsubun*) |
-| 06 | **Uso-fuki** | 嘘吹 | comical pout | ruddy, lopsided eyes, bushy uneven brows, puffed cheeks, pursed lips pushed to one side | puffs of air |
-| 07 | **Saru** | 猿 | monkey | a red heart-shaped face, deep-set wrinkled eyes, a muzzle, a ring of **real fur strands** | persimmons (Monkey and Crab tale) |
-| 08 | **Kitsune** | 狐 | fox (Inari) | glossy white lacquer, long snout, slanted gold eyes, red *kumadori* markings, a gold flame jewel, ears | blue fox-fire (kitsunebi) |
+| 01 | **Kojo / Gojo** | 小尉 | Noh | old man | tan aged wood, deep forehead wrinkles, hollow cheeks, an open smile with a few teeth, a **real-hair beard**, moustache and eyebrow tufts |
+| 02 | **Chujo** | 中将 | Noh | noble man | gofun (shell-white) face, high painted *hikimayu* brows, a knitted sorrowful brow, a fine moustache, blackened teeth (*ohaguro*) |
+| 03 | **Ko-omote** | 小面 | Noh | young woman | white plump face, hair parted in the centre with the three loose strands either side, *hikimayu*, small red lips, black teeth |
+| 04 | **Hannya** | 般若 | Noh | female demon | **follows your reference**: red lacquer, gold scrollwork with dark edges, worn black in the recesses, gold eyes, gold horns, gold teeth and fangs, a gaping mouth |
+| 05 | **Buaku** | 武悪 | Kyogen | demon | dark red-brown, crushed scowling brows, bulging gold eyes, a big nose, lips clamped shut |
+| 06 | **Uso-fuki** | 嘯吹 | Kyogen | comical pout | ruddy, lopsided eyes, bushy uneven brows, puffed cheeks, pursed lips pushed to one side |
+| 07 | **Saru** | 猿 | Kyogen | monkey | a red heart-shaped face, deep-set wrinkled eyes, a muzzle, a ring of fur strands |
+| 08 | **Kitsune** | 狐 | Kyogen | fox | glossy white lacquer, long snout, slanted gold eyes, red markings, a gold flame jewel, ears (styled like a festival Inari fox, see SOURCES.md) |
 
-Every fact in the app and the reason for each mouth effect is sourced in [SOURCES.md](SOURCES.md).
+Every fact in the app is sourced in [SOURCES.md](SOURCES.md).
 
 ### What makes them look real
 
@@ -78,7 +79,7 @@ in the same sepia theme as Ramen_Builder:
   paper.
 - Hold the phone 20–40 cm away, in even light. The card also works on a laptop or
   tablet screen.
-- The compiled target scores **3,488 detection points over 11 scales, with 47 tracking
+- The compiled target scores **3,556 detection points over 11 scales, with 45 tracking
   points**. Ramen_Builder's card scores 3,847 / 58.
 
 ## Files
@@ -88,12 +89,11 @@ in the same sepia theme as Ramen_Builder:
 | `index.html` | The screens: viewfinder, welcome, mask room, photo. |
 | `js/app.js` | The flow: scan → welcome → camera → tray, plus hints, photo, sound and errors. |
 | `js/scan.js` | Card recognition (MindAR image). |
-| `js/stage.js` | Face AR (MindAR face): the mask pinned to the face pose, swapping masks, mouth effects, the no-camera preview, photos. |
+| `js/stage.js` | Face AR (MindAR face): the mask pinned to the face pose, swapping masks, the no-camera preview, photos. |
 | `js/masks.js` | The eight mask designs: carving, paint, ORM, relief and extra parts. |
 | `js/sculpt.js` | Carving and painting tools: height features, outline, brushes, scrollwork. |
 | `js/build.js` | Turns a design into meshes and textures. Also has tapered tubes and hair ribbons. |
 | `js/look.js` | Lighting, environment, tone mapping and room-light matching. |
-| `js/effects.js` | The particle effects (one sprite atlas painted in code). |
 | `js/sound.js` | Kotsuzumi drum, hyoshigi clappers and shutter, made with WebAudio. |
 | `js/data.js` | Names, kanji, roles, kid-friendly blurbs and facts. |
 | `tools/mask-sheet.html` | Renders every mask. `?id=hannya&yaw=0.5` shows one up close. `?save=1` rewrites `assets/thumbs/`. |

@@ -1,4 +1,4 @@
-// Noh Masks: scan the card → the mask room opens → turn the camera round →
+// Noh and Kyogen Masks: scan the card → the mask room opens → turn the camera round →
 // pick one of eight masks and wear it on your face (MindAR face tracking).
 //
 // ?demo=1     skip the card
@@ -16,7 +16,7 @@ const store = {
   get(k, d){ try { const v = localStorage.getItem('noh.' + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v){ try { localStorage.setItem('noh.' + k, JSON.stringify(v)); } catch { /* private mode */ } },
 };
-const S = { phase: 'scan', mask: BY_ID[q.get('mask')] ? q.get('mask') : store.get('mask', 'hannya'), photoUrl: null, hintTimer: 0, mouthSeen: false };
+const S = { phase: 'scan', mask: BY_ID[q.get('mask')] ? q.get('mask') : store.get('mask', 'hannya'), photoUrl: null, hintTimer: 0 };
 sound.on = store.get('sound', true);
 
 const overlay = (id, on) => $(id).classList.toggle('on', on);
@@ -103,8 +103,8 @@ async function startMasks(preview = false){
   sound.unlock();
   $('goBtn').disabled = true;
   try {
-    if (preview) Stage.startPreview($('ar'), { onFace, onMouth });
-    else await Stage.startCamera($('ar'), { onStatus: (t) => { $('camStatus').textContent = t; }, onFace, onMouth });
+    if (preview) Stage.startPreview($('ar'), { onFace });
+    else await Stage.startCamera($('ar'), { onStatus: (t) => { $('camStatus').textContent = t; }, onFace });
   } catch (err) {
     console.error(err);
     $('goBtn').disabled = false;
@@ -115,7 +115,6 @@ async function startMasks(preview = false){
   S.phase = 'wear';
   show(null);
   overlay('hud', true);
-  $('holdBtn').hidden = !preview;
   document.body.classList.toggle('preview', preview);
   buildTray();
   await select(S.mask, { quiet: true });
@@ -131,7 +130,7 @@ function buildTray(){
     b.className = 'chip';
     b.setAttribute('role', 'option');
     b.dataset.id = m.id;
-    b.innerHTML = `<span class="num">${String(i + 1).padStart(2, '0')}</span><img src="assets/thumbs/${m.id}.png" alt="" loading="lazy"><b>${m.name}</b><small>${m.jp}</small>`;
+    b.innerHTML = `<span class="num">${String(i + 1).padStart(2, '0')}</span><img src="assets/thumbs/${m.id}.png" alt="" loading="lazy"><b>${m.name}</b><small>${m.jp}</small><span class="theatre">${m.theatre}</span>`;
     b.addEventListener('click', () => select(m.id));
     tray.appendChild(b);
   });
@@ -147,7 +146,7 @@ async function select(id, { quiet = false } = {}){
     if (on) c.scrollIntoView({ behavior: quiet ? 'auto' : 'smooth', inline: 'center', block: 'nearest' });
   });
   $('ncFig').textContent = `Fig. ${String(m.n).padStart(2, '0')}`;
-  $('ncRole').textContent = m.role;
+  $('ncRole').textContent = `${m.theatre} · ${m.role}`;
   $('ncName').textContent = m.name + (m.alt ? ` / ${m.alt}` : '');
   $('ncJp').textContent = `${m.jp} · ${m.kana}`;
   $('ncBlurb').textContent = m.blurb;
@@ -161,11 +160,10 @@ async function select(id, { quiet = false } = {}){
 }
 
 function setHint(){
-  const m = BY_ID[S.mask];
-  const what = m.pucker ? 'Pout your lips or open your mouth' : 'Open your mouth wide';
+  // the real Noh technique: tilt up to brighten the mask (terasu), down to cloud it (kumorasu)
   $('hint').innerHTML = document.body.classList.contains('preview')
-    ? `Hold the button for <b>${m.effectName}</b> · drag to turn the mask`
-    : `${what} for <b>${m.effectName}</b>!`;
+    ? 'Drag to turn the mask and see it from the side'
+    : 'Tilt your head <b>up</b> and <b>down</b>: the mask’s mood changes, just like on the Noh stage';
 }
 // After a while, nudge toward the photo button.
 function hintLoop(){
@@ -181,11 +179,6 @@ function hintLoop(){
 }
 
 function onFace(has){ overlay('faceGuide', !has && S.phase === 'wear'); }
-let mouthWas = 0;
-function onMouth(v){
-  if (v > 0.45 && mouthWas <= 0.45 && !S.mouthSeen){ S.mouthSeen = true; buzz(20); }
-  mouthWas = v;
-}
 
 async function takePhoto(){
   if (Stage.isBuilding()) return;
@@ -226,11 +219,6 @@ $('soundBtn').addEventListener('click', () => {
 $('soundBtn').classList.toggle('off', !sound.on);
 $('shutter').addEventListener('click', takePhoto);
 $('photoBack').addEventListener('click', () => show(null));
-const hold = $('holdBtn');
-const holdOn = (e) => { e.preventDefault(); Stage.setManualMouth(1); hold.classList.add('down'); };
-const holdOff = () => { Stage.setManualMouth(0); hold.classList.remove('down'); };
-hold.addEventListener('pointerdown', holdOn);
-['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => hold.addEventListener(ev, holdOff));
 $('errBtn').addEventListener('click', () => { $('err').hidden = true; location.reload(); });
 
 // MindAR's own listeners can throw after a failed camera start; the screen already says what to do.

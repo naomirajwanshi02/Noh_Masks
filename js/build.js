@@ -307,7 +307,6 @@ export function buildMask(def, { maxAniso = 4, size = TEX } = {}){
   g.add(fm, bm);
   def.extras?.(g, { H, O, THREE, rng: rng(def.seed + 11), maps: { map, orm, nmap } });
   g.traverse((o) => { if (o.isMesh){ o.frustumCulled = false; } });
-  g.userData.mouth = def.mouth || [0, -4.2, H.h(0, -4.2) + 0.5];
   g.userData.buildMs = Math.round(performance.now() - t0);
   g.userData.textures = tex;
   return g;

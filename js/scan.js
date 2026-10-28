@@ -1,6 +1,6 @@
 // Card recognition: MindAR image tracking (mind-ar 1.2.5 + three 0.160.0, the same
 // pins as Ramen_Builder and sushi-ar) watches the back camera until it sees the
-// Noh Masks card, then shuts down completely so the selfie camera can take over.
+// Noh and Kyogen Masks card, then shuts down completely so the selfie camera can take over.
 
 const params = new URLSearchParams(location.search);
 export const TARGET_SRC = params.get('target') || './targets.mind';

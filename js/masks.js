@@ -237,7 +237,6 @@ const KOJO = {
     beard.name = 'beard';
     group.add(beard);
   },
-  mouth: [0, -4.3, 6.2],
 };
 
 // Gold scrollwork of the reference mask, used on Hannya's brows, cheeks and chin.
@@ -339,7 +338,6 @@ const HANNYA = {
       const lo = new THREE.Mesh(fang, ivory); lo.scale.set(0.9, 0.8, 0.9); lo.position.set(s * 2.05, -5.0, H.h(s * 2.05, -5.0) + 0.1); lo.rotation.set(-0.2, 0, s * 0.1); group.add(lo);
     }
   },
-  mouth: [0, -4.6, 6.3],
 };
 
 const BUAKU = {
@@ -379,7 +377,6 @@ const BUAKU = {
   detail(g){
     both((g) => { for (let i = 0; i < 26; i++){ const t = i / 25; brush(g, [[0.6 + t * 4.3, 4.35 + t * 0.4 + Math.sin(t * 3) * 0.3], [0.9 + t * 4.4, 5.05 + Math.sin(t * 3) * 0.35]], 0.1, 0.02, '#c0c0c0', 1); } })(g);
   },
-  mouth: [0, -4.5, 6.4],
 };
 
 const USOFUKI = {
@@ -419,7 +416,6 @@ const USOFUKI = {
     const r = rng(17); g.fillStyle = 'rgba(40,22,12,.5)';
     for (let i = 0; i < 260; i++){ const a = r() * 6.28, d = 1.2 + r() * 2.2; ellipse(g, 0.3 + Math.cos(a) * d * 1.2, -4.5 + Math.sin(a) * d * 0.9, 0.035, 0.035); g.fill(); }
   },
-  mouth: [0.45, -4.0, 8.0],
 };
 
 const SARU = {
@@ -487,7 +483,6 @@ const SARU = {
     fur.name = 'fur';
     group.add(fur);
   },
-  mouth: [0, -4.3, 7.2],
 };
 
 const KITSUNE = {
@@ -544,7 +539,6 @@ const KITSUNE = {
       group.add(ear);
     }
   },
-  mouth: [0, -3.6, 8.2],
 };
 
 export const DEFS = { kojo: KOJO, chujo: CHUJO, koomote: KOOMOTE, hannya: HANNYA, buaku: BUAKU, usofuki: USOFUKI, saru: SARU, kitsune: KITSUNE };

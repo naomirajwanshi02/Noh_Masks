@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Noh Masks target maker</title>
+<title>Noh and Kyogen Masks target maker</title>
 <style>
   body{margin:0;padding:16px;background:#ecdfc6;color:#3b2a1c;font:14px/1.5 ui-monospace,Consolas,monospace}
   img,canvas{max-width:100%;box-shadow:0 0 0 1px #8c7457;display:block;margin:10px 0}
@@ -50,11 +50,11 @@ async function draw(){
   }
   for (const [x, y] of [[44, 44], [W - 44, 44], [44, H - 44], [W - 44, H - 44]]){ g.fillStyle = '#d2bd98'; g.beginPath(); g.arc(x, y, 5, 0, 6.28); g.fill(); g.lineWidth = 1.5; g.stroke(); }
   // title block
-  g.fillStyle = '#2b1e13'; g.font = '700 150px Georgia,"Times New Roman",serif'; g.fillText('NOH', 78, 200);
-  g.fillStyle = '#b5452f'; g.font = 'italic 700 112px Georgia,"Times New Roman",serif'; g.fillText('Masks', 84, 312);
-  g.fillStyle = '#5b4630'; g.font = '22px Consolas,monospace'; g.fillText('FIG. 01 · SCAN ME TO WEAR A MASK · 能面', 84, 356);
+  g.fillStyle = '#2b1e13'; g.font = '700 70px Georgia,"Times New Roman",serif'; g.fillText('NOH & KYOGEN', 80, 150);
+  g.fillStyle = '#b5452f'; g.font = 'italic 700 112px Georgia,"Times New Roman",serif'; g.fillText('Masks', 84, 270);
+  g.fillStyle = '#5b4630'; g.font = '22px Consolas,monospace'; g.fillText('FIG. 01 · SCAN ME TO WEAR A MASK · 能・狂言', 84, 330);
   // big seal
-  g.save(); g.translate(690, 200); g.rotate(-0.22);
+  g.save(); g.translate(740, 210); g.rotate(-0.22);
   g.strokeStyle = '#b5452f'; g.lineWidth = 8; g.beginPath(); g.arc(0, 0, 78, 0, 6.28); g.stroke();
   g.fillStyle = '#b5452f'; g.font = '900 84px "Yu Gothic","Meiryo",sans-serif'; g.textAlign = 'center'; g.fillText('能', 0, 30);
   g.restore(); g.textAlign = 'left';

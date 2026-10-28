@@ -1,9 +1,9 @@
 # Sources
 
-Every fact in the app (`js/data.js`) and the reason for each mouth effect, with
-where it comes from. These were checked on 26 Oct 2026.
+Every fact in the app (`js/data.js`), with where it comes from. These were checked
+on 26 and 28 Oct 2026.
 
-## About Noh
+## About Noh and Kyogen
 
 - "Noh has been performed in Japan since the 1300s." UNESCO says Nōgaku had its
   heyday in the 14th and 15th centuries, when Kan'ami and Zeami shaped the form.
@@ -24,27 +24,28 @@ where it comes from. These were checked on 26 Oct 2026.
 | **Buaku** 武悪 | A Kyogen demon mask: fierce but a little timid, often reddish-brown. Used in *Setsubun*, *Enma*, *Asahina* and others. | [JAANUS (AISF): Buaku](https://aisf.or.jp/~jaanus/deta/b/buaku.htm) · [Columbia JAANUS: Buaku](https://projects.mcah.columbia.edu/jaanus/node/5081) |
 | **Uso-fuki** 嘯吹 | A Kyogen mask with pursed lips, "blowing with all his might". The name means "bluffer or whistler". He plays a mosquito in *Kazumō*, mushrooms in *Kusabira*, and ants and cicadas. | [Columbia JAANUS: usobuki](https://projects.mcah.columbia.edu/jaanus/record/usobuki) · [Brooklyn Museum: Usofuki](https://brooklynmuseum.org/opencollection/objects/27399) |
 | **Saru** 猿 | The monkey of the Kyogen play *Utsubozaru*. Children of Kyogen families usually debut at about age 4 as the little monkey. | [Kids Web Japan: Kyogen](https://web-japan.org/kidsweb/cool/13-12-16/002.html) |
-| **Kitsune** 狐 | Foxes are Inari's messengers, can take human form, and make *kitsunebi* (fox-fire). | [Wikipedia: Kitsune](https://en.wikipedia.org/wiki/Kitsune) |
+| **Kitsune** 狐 | In the Kyogen play *Tsurigitsune* an old fox disguises himself as the priest Hakuzōsu. Foxes are Inari's messengers and make *kitsunebi* (fox-fire). | [Nelson-Atkins: Kyōgen fox mask](https://art.nelson-atkins.org/objects/1868/kyogen-mask-of-a-fox-in-the-guise-of-the-buddhist-priest-ha) · [Wikipedia: Kitsune](https://en.wikipedia.org/wiki/Kitsune) |
 
-## Why each mouth effect
+## Noh or Kyogen?
 
-| Mask | Effect | Why |
+All eight are real mask types from the two theatres of Nōgaku (UNESCO lists Noh and
+Kyogen together as [Nôgaku theatre](https://ich.unesco.org/en/RL/nogaku-theatre-00012)).
+
+| Theatre | Masks | Sources |
 |---|---|---|
-| Kojo | **pine needles** | In *Takasago*, the Kojo old man sweeps under the pine. He is the spirit of that pine. ([Wikipedia: Takasago](https://en.wikipedia.org/wiki/Takasago_(play))) |
-| Chujo | **red maple leaves** | Narihira's most famous poem (Hyakunin Isshu no. 17) is about red maple leaves on the Tatsuta River. ([Virginia: Hyakunin Isshu 17](https://jti.lib.virginia.edu/japanese/hyakunin/noJIS/hyaku17.html) · [100poets.com: poem 17](https://100poets.com/2011/08/13/a-thousand-swift-swords-poem-number-17/)) |
-| Ko-omote | **cherry petals** | In the Noh play *Yuya*, falling cherry blossoms move the lord to let Yuya go home. Ko-omote is one of the young-woman masks used for that role. This link is looser: schools choose different masks. ([Summary of Yuya](https://noh-sup.hinoki-shoten.co.jp/sh/6/en) · [the-noh.com: Yuya](https://nohcom3.sakura.ne.jp/en/plays/data/detail_016.html)) |
-| Hannya | **fire** | In the Dōjōji legend, Kiyohime becomes a serpent and breathes fire that melts the temple bell. The Noh play *Dōjōji* uses a red Hannya. ([Wikipedia: Kiyohime](https://en.wikipedia.org/wiki/Kiyohime) · [Wikipedia: Hannya](https://en.wikipedia.org/wiki/Hannya)) |
-| Buaku | **roasted beans thrown at him** | Buaku is the demon in the Kyogen play *Setsubun*. At Setsubun, demons are chased away with roasted soybeans ("Oni wa soto!"). The beans fly *at* the mask, not out of it. ([JAANUS: Buaku](https://aisf.or.jp/~jaanus/deta/b/buaku.htm) · [Kyoto travel: Setsubun](https://kyoto.travel/en/travel-inspiration/setsubun-festival/) · [Kitano Tenmangū Setsubun](https://discoverkyoto.com/event-calendar/february/setsubun-kitano-tenmangu)) |
-| Uso-fuki | **puffs of air** (also when you pout) | The mask "appears to be blowing with all his might", and its name means whistler. ([Columbia JAANUS: usobuki](https://projects.mcah.columbia.edu/jaanus/record/usobuki)) |
-| Saru | **persimmons** | Persimmons are the centre of Japan's best-known monkey tale, *Saru Kani Gassen* (The Crab and the Monkey). This is a folktale, not the Kyogen play. ([Wikipedia: The Crab and the Monkey](https://en.wikipedia.org/wiki/The_Crab_and_the_Monkey) · [Kids Web Japan: Saru Kani](https://web-japan.org/kidsweb/folk/sarukani/sarukani01.html)) |
-| Kitsune | **blue fox-fire** | *Kitsunebi*, the ghostly flames foxes make in folklore. ([Wikipedia: Kitsune](https://en.wikipedia.org/wiki/Kitsune)) |
+| **Noh** | Kojo, Chujo, Ko-omote, Hannya | See the rows above (The Met, Columbia JAANUS, Horniman, Wikipedia). |
+| **Kyogen** | Buaku, Uso-fuki | [JAANUS: Buaku](https://aisf.or.jp/~jaanus/deta/b/buaku.htm) · [Columbia JAANUS: usobuki](https://projects.mcah.columbia.edu/jaanus/record/usobuki) |
+| **Kyogen** | Saru (monkey) | [MFA Boston: Kyōgen mask of the Saru type](https://mfaboston6.emuseum.com/objects/16129/kyogen-mask-of-the-saru-type) · [LACMA: monkey mask for the Kyōgen play *Hakuzōsu*](https://collections.lacma.org/node/192292) |
+| **Kyogen** | Kitsune (fox) | [Nelson-Atkins: Kyōgen mask of a fox disguised as the priest Hakuzōsu (*Tsurigitsune*)](https://art.nelson-atkins.org/objects/1868/kyogen-mask-of-a-fox-in-the-guise-of-the-buddhist-priest-ha) · [Google Arts & Culture: Kyōgen mask, Kitsune](https://artsandculture.google.com/asset/ky%C5%8Dgen-mask-kitsune-fox-unknown/6QFtFk9TJTrSww) |
 
 ## Honest notes on the designs
 
 - **Hannya** is painted red with gold scrollwork to follow the reference image.
   Red Hannya are real ([Wikipedia](https://en.wikipedia.org/wiki/Hannya)). The gold
   scrollwork is decoration from the reference, not part of a classical Noh Hannya.
-- **Kitsune** follows the popular white Inari fox mask, with red markings and gold.
-  The Kyogen fox mask, for plays like *Tsurigitsune*, looks different.
+- **Kitsune** is a Kyogen mask type, but this design follows the popular white Inari
+  festival fox, with red markings and gold.
+  Museum Kyogen fox masks (for *Tsurigitsune*) look different: carved wood in natural
+  tones, some with bared fangs or folded ears, so this one is not a faithful Kyogen mask.
 - The masks are made in code. They are close interpretations, not copies of
   particular museum pieces.

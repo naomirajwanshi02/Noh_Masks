@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#ecdfc6">
-<title>Noh Masks AR</title>
+<title>Noh and Kyogen Masks AR</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%91%BA%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,7 +47,7 @@
 
 <!-- ============ 1 · VIEWFINDER: find the card ============ -->
 <div id="guide" class="overlay">
-  <div class="scan-top plate"><b>Point your camera at the Noh Masks card</b><span class="cap">The masks appear as soon as it's found</span></div>
+  <div class="scan-top plate"><b>Point your camera at the card</b><span class="cap">The masks appear as soon as it's found</span></div>
   <div class="frame"><i></i><i></i><i></i><i></i><div class="sweep"></div></div>
   <div class="scan-bottom">
     <div class="status" id="scanStatus">Starting camera…</div>
@@ -65,14 +65,14 @@
 <section id="intro" class="screen dim">
   <div class="col center">
     <div class="plate welcome">
-      <span class="corner tl">Fig. 01</span><span class="corner tr">Noh Masks · 能面</span>
+      <span class="corner tl">Fig. 01</span><span class="corner tr">Noh &amp; Kyogen · 能・狂言</span>
       <img class="hero-mask" id="introMask" src="assets/thumbs/hannya.png" alt="">
-      <h1>Wear a Noh mask!</h1>
-      <p>Noh is a kind of Japanese theatre performed <b>since the 1300s</b>. The actors wear carved wooden masks, and tilting a mask up or down can change its feeling.</p>
+      <h1>Wear a Noh or Kyogen mask!</h1>
+      <p><b>Noh</b> is Japanese theatre performed <b>since the 1300s</b>, and <b>Kyogen</b> is its funny partner, played on the same stage. Actors in both wear carved wooden masks.</p>
       <ol class="steps">
         <li><b>1</b><span>Let us use your <b>selfie camera</b></span></li>
         <li><b>2</b><span>Pick a mask from the bottom</span></li>
-        <li><b>3</b><span><b>Open your mouth</b> for a surprise</span></li>
+        <li><b>3</b><span><b>Tilt your head</b> to change its mood</span></li>
         <li><b>4</b><span>Take a photo!</span></li>
       </ol>
       <p class="small">To wear the masks we need your <b>selfie camera</b>. The video stays on this phone: nothing is recorded or sent anywhere.</p>
@@ -110,7 +110,6 @@
 
   <div class="hud-bottom">
     <div class="actions">
-      <button class="holdbtn" id="holdBtn" hidden>Hold to open mouth</button>
       <button class="shutter" id="shutter" aria-label="Take a photo"><i></i></button>
     </div>
     <div class="tray plate" id="tray" role="listbox" aria-label="Choose a mask"></div>
@@ -124,7 +123,7 @@
   <div class="col center">
     <div class="plate photocard">
       <span class="corner tl">Your photo</span><span class="corner tr" id="photoName"></span>
-      <img id="photoImg" alt="Your photo wearing a Noh mask">
+      <img id="photoImg" alt="Your photo wearing a Noh or Kyogen mask">
       <div class="row">
         <a class="btn red small" id="saveBtn" download="noh-mask.jpg">Save</a>
         <button class="btn ghost small" id="shareBtn" hidden>Share</button>

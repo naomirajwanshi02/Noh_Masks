@@ -1,5 +1,5 @@
 // The mask stage: MindAR face tracking with the front camera, the mask fixed to
-// the face, effects when the mouth opens, and photos. Without a camera (or with
+// the face, and photos. Without a camera (or with
 // ?preview=1) the same mask hangs in a lit "preview" you can turn with a finger.
 //
 // Masks are carved in MindAR's canonical face units (cm) and hang from the whole-face
@@ -10,7 +10,6 @@ import * as THREE from 'three';
 import { DEFS } from './masks.js';
 import { buildMask, disposeMask } from './build.js';
 import { setupLook, roomLight } from './look.js';
-import { Effects } from './effects.js';
 import { BY_ID } from './data.js';
 import { bindToFace, followFace } from './face-fit.js';
 
@@ -20,8 +19,8 @@ const TEX_SIZE = Math.min(screen.width, screen.height) < 600 || (navigator.devic
 
 const R = {
   mode: null, container: null, mindar: null, renderer: null, scene: null, camera: null,
-  holder: null, current: null, currentId: null, cache: new Map(), effects: null, look: null, light: null,
-  video: null, hasFace: false, mouthOpen: 0, pucker: 0, manualMouth: 0, onFace: null, onMouth: null,
+  holder: null, current: null, currentId: null, cache: new Map(), look: null, light: null,
+  video: null, hasFace: false, onFace: null,
   drag: { yaw: 0, pitch: 0, vy: 0, active: false }, t: 0, last: 0, swap: null, building: false,
 };
 
@@ -39,7 +38,7 @@ function ensureMask(id){
   return m;
 }
 
-// Put a mask on: the old one turns away, the new one swings in with a sparkle puff.
+// Put a mask on: the old one turns away, the new one swings in.
 export async function wear(id){
   if (id === R.currentId || R.building) return;
   R.building = true;
@@ -51,19 +50,9 @@ export async function wear(id){
   m.scale.setScalar(0.001);
   R.holder.add(m);
   R.swap = { t: 0, old, neu: m };
-  R.effects.clear();
-  if (R.hasFace || R.mode === 'preview') puff();
 }
 export const currentId = () => R.currentId;
 export const isBuilding = () => R.building;
-
-function puff(){
-  const c = new THREE.Vector3(0, 0, 6), up = new THREE.Vector3(0, 1, 0), right = new THREE.Vector3(1, 0, 0);
-  R.holder.updateWorldMatrix(true, false);
-  c.applyMatrix4(R.holder.matrixWorld);
-  up.transformDirection(R.holder.matrixWorld); right.transformDirection(R.holder.matrixWorld);
-  R.effects.puff(c, up, right);
-}
 
 const easeBack = (t) => 1 + 2.4 * (t - 1) ** 3 + 1.4 * (t - 1) ** 2;
 function animateSwap(dt){
@@ -83,27 +72,12 @@ function animateSwap(dt){
 }
 
 // ------------------------------------------------------------------ render loop
-const tmpO = new THREE.Vector3(), tmpF = new THREE.Vector3(), tmpU = new THREE.Vector3();
 function frame(now){
   const dt = Math.min(0.05, (now - (R.last || now)) / 1000);
   R.last = now; R.t += dt;
   if (R.mode === 'camera') readFace();
   else previewPose(dt);
   animateSwap(dt);
-
-  // mouth open → the mask's effect streams out of its mouth
-  const def = R.currentId && BY_ID[R.currentId];
-  const open = Math.max(R.mouthOpen, R.manualMouth, def?.pucker ? R.pucker : 0);
-  const amount = Math.max(0, Math.min(1, (open - 0.28) / 0.35));
-  R.onMouth?.(open);
-  if (def && amount > 0 && (R.hasFace || R.mode === 'preview') && !R.swap){
-    R.holder.updateWorldMatrix(true, true);
-    tmpO.fromArray(R.current.userData.mouth).applyMatrix4(R.holder.matrixWorld);
-    tmpF.set(0, -0.15, 1).transformDirection(R.holder.matrixWorld);
-    tmpU.set(0, 1, 0).transformDirection(R.holder.matrixWorld);
-    R.effects.stream(def.effect, tmpO, tmpF, tmpU, dt, amount);
-  }
-  R.effects.update(dt, R.t);
   if (R.light) R.light(R.video, now, dt);
   R.renderer.render(R.scene, R.camera);
 }
@@ -119,13 +93,6 @@ function readFace(){
     if (R.current) followFace(R.current, est.metricLandmarks);
     if (R.swap?.old) followFace(R.swap.old, est.metricLandmarks);
   }
-  const cats = est?.blendshapes?.categories;
-  if (cats){
-    let jaw = 0, pk = 0;
-    for (const c of cats){ if (c.categoryName === 'jawOpen') jaw = c.score; else if (c.categoryName === 'mouthPucker') pk = c.score; }
-    R.mouthOpen += (jaw - R.mouthOpen) * 0.5;
-    R.pucker += (pk - R.pucker) * 0.5;
-  } else { R.mouthOpen *= 0.8; R.pucker *= 0.8; }
 }
 
 // The preview hangs the mask in front of the camera and lets a finger turn it.
@@ -135,20 +102,13 @@ function previewPose(dt){
   R.anchor.rotation.set(D.pitch, D.yaw, 0);
 }
 
-function sizeEffects(){
-  const h = R.renderer.getDrawingBufferSize(new THREE.Vector2()).y;
-  R.effects.setScale(h / (2 * Math.tan(THREE.MathUtils.degToRad(R.camera.fov) / 2)));
-}
-
 // ------------------------------------------------------------------ start / stop
 function common(renderer, scene, camera, anchorGroup){
   R.renderer = renderer; R.scene = scene; R.camera = camera;
   R.look = setupLook(renderer, scene);
   R.holder = new THREE.Group();
   // the masks are carved in the canonical face's centimetres, the same space as MindAR's faceMatrix
-
   anchorGroup.add(R.holder);
-  R.effects = new Effects(scene);
 }
 
 // Ask for the front camera with a sharper picture than MindAR's default request.
@@ -169,9 +129,9 @@ function hdVideo(){
   });
 }
 
-export async function startCamera(container, { onStatus, onFace, onMouth }){
+export async function startCamera(container, { onStatus, onFace }){
   stop();
-  R.mode = 'camera'; R.container = container; R.onFace = onFace; R.onMouth = onMouth;
+  R.mode = 'camera'; R.container = container; R.onFace = onFace;
   onStatus?.('Loading the face tracker…');
   const { MindARThree } = await import('mindar-face-three');
   // One Euro filter: a low cut-off keeps a still face steady, a high beta removes lag when you move
@@ -192,14 +152,13 @@ export async function startCamera(container, { onStatus, onFace, onMouth }){
   R.video = mindar.video;
   R.video.classList.add('feed');
   R.light = roomLight(R.look, R.renderer);
-  sizeEffects();
   addEventListener('resize', onResize);
   R.renderer.setAnimationLoop(frame);
 }
 
-export function startPreview(container, { onFace, onMouth } = {}){
+export function startPreview(container, { onFace } = {}){
   stop();
-  R.mode = 'preview'; R.container = container; R.onFace = onFace; R.onMouth = onMouth;
+  R.mode = 'preview'; R.container = container; R.onFace = onFace;
   container.classList.add('preview');
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -236,11 +195,7 @@ function onResize(){
     R.camera.fov = w / h < 0.75 ? 30 / Math.max(0.55, (w / h) / 0.75) : 30;
     R.camera.updateProjectionMatrix();
   }
-  if (R.renderer) setTimeout(sizeEffects, 50);
 }
-
-// Hold-to-open for the preview (no real mouth to watch).
-export function setManualMouth(v){ R.manualMouth = v; }
 
 export function stop(){
   removeEventListener('resize', onResize);
@@ -251,7 +206,7 @@ export function stop(){
   R.cache.clear();
   if (R.mode === 'preview') R.renderer?.dispose();
   if (R.container){ R.container.innerHTML = ''; R.container.classList.remove('preview'); }
-  Object.assign(R, { mode: null, current: null, currentId: null, video: null, hasFace: false, swap: null, light: null, mouthOpen: 0, pucker: 0 });
+  Object.assign(R, { mode: null, current: null, currentId: null, video: null, hasFace: false, swap: null, light: null });
 }
 
 // ------------------------------------------------------------------ photo
@@ -288,7 +243,7 @@ function caption(g, W, H, k, m){
   g.fillStyle = '#f6eddb'; roundRect(g, x, y, w, h, 6 * k); g.fill();
   g.shadowBlur = 0; g.strokeStyle = '#8c7457'; g.lineWidth = k; g.stroke();
   g.fillStyle = '#5b4630'; g.font = `${9.5 * k}px ui-monospace,Consolas,monospace`;
-  g.fillText(`FIG. ${String(m.n).padStart(2, '0')} · NOH MASKS`, x + 10 * k, y + 16 * k);
+  g.fillText(`FIG. ${String(m.n).padStart(2, '0')} · NOH & KYOGEN MASKS`, x + 10 * k, y + 16 * k);
   g.textAlign = 'right'; g.fillText(m.role.toUpperCase(), x + w - 10 * k, y + 16 * k);
   g.textAlign = 'left'; g.fillStyle = '#2b1e13'; g.font = `900 ${20 * k}px 'Zen Maru Gothic',system-ui,sans-serif`;
   g.fillText(m.name, x + 10 * k, y + 43 * k);
