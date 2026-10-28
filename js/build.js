@@ -116,7 +116,7 @@ function paint(def, H, O, holes, size){
   }
   const cav = sampler(cavA), ridge = sampler(ridgeA), ao = sampler(aoA), mot = sampler(motA);
 
-  const A = canvas2d(S, P.skin);
+  const A = canvas2d(S, def.photo ? null : P.skin); // a painting brings its own edge
   def.paint(A.g, { H, O });
   const M = canvas2d(S, `rgb(0,${Math.round(P.rough * 255)},0)`);
   def.orm?.(M.g, { H, O });
@@ -153,7 +153,7 @@ function paint(def, H, O, holes, size){
         ad[o + c] = v < 0 ? 0 : v > 255 ? 255 : v;
       }
       // pupil and nostril holes, anti-aliased
-      let alpha = 255;
+      let alpha = ad[o + 3];
       for (const h of holeT){
         const dx = x - h.x, dy = y - h.y;
         const u = (dx * h.c + dy * h.s) / h.rx, v = (-dx * h.s + dy * h.c) / h.ry;

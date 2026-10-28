@@ -7,7 +7,7 @@
 // lines up with the real eyes and stays put when you talk or smile.
 
 import * as THREE from 'three';
-import { DEFS } from './masks.js';
+import { DEFS, prepareMask } from './masks.js';
 import { buildMask, disposeMask } from './build.js';
 import { setupLook, roomLight } from './look.js';
 import { BY_ID } from './data.js';
@@ -43,6 +43,7 @@ export async function wear(id){
   if (id === R.currentId || R.building) return;
   R.building = true;
   await new Promise((ok) => setTimeout(ok, 60)); // let the UI show "carving…"
+  try { await prepareMask(id); } catch (e) { R.building = false; throw e; }
   let m;
   try { m = ensureMask(id); } finally { R.building = false; }
   const old = R.current;

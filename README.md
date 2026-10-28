@@ -37,7 +37,7 @@ same stage. Made for ages 8–14.
 | 07 | **Saru** | 猿 | Kyogen | monkey | an olive fur cap with a widow's peak and fur down the sides, a beige face, red-rimmed round eyes, a split muzzle and a wide smile, red ears |
 | 08 | **Kitsune** | 狐 | Kyogen | fox | weathered cream lacquer, a red flame on the brow, red-lined amber eyes, black whiskers, a black nose, a curling red smile, tall ears with red insides |
 
-The look of each mask follows the reference paintings supplied for this project. Every fact in the app is sourced in [SOURCES.md](SOURCES.md).
+The look of each mask follows the reference paintings supplied for this project. **Kojo, Hannya, Uso-fuki, Buaku and Kitsune are those paintings themselves** (`assets/refs/`): each is lined up so its pupils sit on the wearer's eyes, projected onto the carved shell from the front, and its light and shade carve the shell too, so from the front the mask is the painting and from the side it has depth. The paper is cut away, the cords are painted out, and Hannya's horns and the fox's ears are separate solids painted from the same picture (`js/photo.js`). Chujo, Ko-omote and Saru are still carved and painted by hand in code. Every fact in the app is sourced in [SOURCES.md](SOURCES.md).
 
 ### What makes them look real
 
@@ -79,7 +79,7 @@ in the same sepia theme as Ramen_Builder:
   paper.
 - Hold the phone 20–40 cm away, in even light. The card also works on a laptop or
   tablet screen.
-- The compiled target scores **3,570 detection points over 11 scales, with 48 tracking
+- The compiled target scores **3,591 detection points over 11 scales, with 51 tracking
   points**. Ramen_Builder's card scores 3,847 / 58.
 
 ## Files
@@ -99,6 +99,7 @@ in the same sepia theme as Ramen_Builder:
 | `tools/mask-sheet.html` | Renders every mask. `?id=hannya&yaw=0.5` shows one up close. `?save=1` rewrites `assets/thumbs/`. |
 | `tools/compare.html` | Renders each mask beside its reference painting from `tools/refs/<id>.jpg` (the references are kept out of git). |
 | `tools/fit-check.html` | Shows a mask on MindAR's face model (side, front, and with the jaw dropped through the skinning) and prints how far it sits from the face. |
+| `js/photo.js` | Turns a reference painting into a mask: lines it up on the face, cuts away the paper, paints out cords, carves relief from its shading, and paints parts (horns, ears) from it. |
 | `js/face-fit.js` / `js/face-model.js` | The face-fitted shell every mask is carved from, and the skinning that moves each vertex with its nearest face landmarks. |
 | `tools/make-target.html` | Redraws `target.png` from the thumbnails and compiles `targets.mind` (`?build=1`). |
 | `tools/serve.ps1` | A local dev server. It needs no Node or Python; localhost counts as secure for the camera. |

@@ -11,7 +11,7 @@
 <div id="log"></div>
 <script type="module">
 import * as THREE from 'three';
-import { DEFS } from '../js/masks.js';
+import { DEFS, prepareMask } from '../js/masks.js';
 import { buildMask } from '../js/build.js';
 import { setupLook } from '../js/look.js';
 import { bindToFace, followFace } from '../js/face-fit.js';
@@ -34,6 +34,7 @@ function faceMesh(pts){
   return new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: '#d9a98a', roughness: 0.6, side: THREE.DoubleSide }));
 }
 const face = faceMesh(LM);
+await prepareMask(id);
 const mask = buildMask(DEFS[id]);
 bindToFace(mask);
 const rig = new THREE.Group(); scene.add(rig);

@@ -9,7 +9,7 @@
 
 import { shellZ, faceZ } from './face-fit.js';
 
-export const SPAN = 22;          // the textures cover x and y from -11 to 11 cm
+export const SPAN = 24;          // the textures cover x and y from -12 to 12 cm
 export const EYE = { x: 3.18, y: 2.63 };
 
 const TAU = Math.PI * 2;
@@ -69,6 +69,7 @@ export function sym(...fs){
 }
 
 function compile(f){
+  if (f.k === 'fn') return f.fn; // any height function (the photo masks' painted relief)
   if (f.k === 'blob'){
     const c = Math.cos(f.rot), s = Math.sin(f.rot), ix = 1 / (2 * f.sx * f.sx), iy = 1 / (2 * f.sy * f.sy);
     const R = 3.4 * Math.max(f.sx, f.sy);

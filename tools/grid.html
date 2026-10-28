@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Reference grid</title></head>
+<body style="margin:0">
+<script>
+// Draws a reference painting with a labelled 50 px grid, for reading off landmark positions.
+const id = new URLSearchParams(location.search).get('id');
+const img = new Image();
+img.onload = () => {
+  const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+  const g = c.getContext('2d'); g.drawImage(img, 0, 0);
+  g.font = '14px monospace';
+  for (let x = 0; x < c.width; x += 50){ g.strokeStyle = x % 100 ? 'rgba(0,120,255,.35)' : 'rgba(0,80,255,.8)'; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, c.height); g.stroke(); if (x % 100 === 0){ g.fillStyle = '#0050ff'; g.fillText(x, x + 2, 14); } }
+  for (let y = 0; y < c.height; y += 50){ g.strokeStyle = y % 100 ? 'rgba(0,120,255,.35)' : 'rgba(0,80,255,.8)'; g.beginPath(); g.moveTo(0, y); g.lineTo(c.width, y); g.stroke(); if (y % 100 === 0){ g.fillStyle = '#0050ff'; g.fillText(y, 2, y - 2); } }
+  document.body.appendChild(c);
+  window.__canvas = c; window.__done = true;
+};
+img.src = `refs/${id}.jpg`;
+</script></body></html>

@@ -17,7 +17,7 @@
 <div id="log"></div>
 <script type="module">
 import * as THREE from 'three';
-import { DEFS } from '../js/masks.js';
+import { DEFS, prepareMask } from '../js/masks.js';
 import { buildMask } from '../js/build.js';
 import { setupLook } from '../js/look.js';
 
@@ -52,6 +52,7 @@ async function save1(id){
 renderer.setScissorTest(true);
 for (let i = 0; i < ids.length; i++){
   const id = ids[i];
+  await prepareMask(id);
   const m = buildMask(DEFS[id], { maxAniso: renderer.capabilities.getMaxAnisotropy() });
   log(`${id}: built in ${m.userData.buildMs} ms`);
   m.rotation.set(pitch, yaw, 0);

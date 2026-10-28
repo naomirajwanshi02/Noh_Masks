@@ -10,7 +10,7 @@
 <p>Each mask (front, lit as in AR) beside its reference painting from <code>tools/refs/&lt;id&gt;.jpg</code> (kept out of git). <code>?id=saru</code></p>
 <script type="module">
 import * as THREE from 'three';
-import { DEFS } from '../js/masks.js';
+import { DEFS, prepareMask } from '../js/masks.js';
 import { buildMask } from '../js/build.js';
 import { setupLook } from '../js/look.js';
 
@@ -32,6 +32,7 @@ for (let i = 0; i < ids.length; i++){
   const img = new Image(); img.src = `refs/${id}.jpg`;
   await img.decode().catch(() => {});
   if (img.naturalWidth){ const k = Math.min(S / img.naturalWidth, S / img.naturalHeight); o.drawImage(img, x + (S - img.naturalWidth * k) / 2, y + (S - img.naturalHeight * k) / 2, img.naturalWidth * k, img.naturalHeight * k); }
+  await prepareMask(id);
   const m = buildMask(DEFS[id]);
   scene.add(m); r.render(scene, cam); scene.remove(m);
   o.drawImage(r.domElement, x + S, y);
