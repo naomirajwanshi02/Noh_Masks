@@ -14,8 +14,8 @@ import { BY_ID } from './data.js';
 import { bindToFace, followFace } from './face-fit.js';
 
 const CACHE_MAX = 3; // built masks kept on the GPU
-// Phones carve with 768 px textures: about half the time of 1024, and still sharp at arm's length.
-const TEX_SIZE = Math.min(screen.width, screen.height) < 600 || (navigator.deviceMemory || 8) <= 4 ? 768 : 1024;
+// Phones carve with 896 px textures: about half the time of 1280, and still sharp at arm's length.
+const TEX_SIZE = Math.min(screen.width, screen.height) < 600 || (navigator.deviceMemory || 8) <= 4 ? 896 : 1280;
 
 const R = {
   mode: null, container: null, mindar: null, renderer: null, scene: null, camera: null,

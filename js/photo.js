@@ -9,7 +9,7 @@
 
 import { SPAN } from './sculpt.js';
 
-const N = 256, CELL = SPAN / N;
+const N = 320, CELL = SPAN / N;
 
 function loadImage(src){
   return new Promise((ok, fail) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => fail(new Error('could not load ' + src)); i.src = src; });
@@ -40,7 +40,8 @@ function blur(a, n, r){
 }
 
 // spec: { src, eyes: [[px,py],[px,py]], chin: py (→ chinY cm), top: py, paper: tolerance,
-//         patches: [{ x, y, rx, ry, from: [px,py] }] (paint over bits, e.g. cords), relief: [fine, broad] }
+//         patches: [{ x, y, rx, ry, from: [px,py] }] (paint over bits, e.g. cords), relief: [fine, broad],
+//         clear: [[x0,y0,x1,y1]] (boxes where all paper colour is cut away) }
 export async function loadPhoto(spec){
   const img = await loadImage(spec.src);
   const W = img.naturalWidth, H = img.naturalHeight;
@@ -78,6 +79,9 @@ export async function loadPhoto(spec){
     if (x > 0) stack.push(p - 1); if (x < W - 1) stack.push(p + 1);
     if (p >= W) stack.push(p - W); if (p < W * (H - 1)) stack.push(p + W);
   }
+  // `clear` boxes: there any paper colour goes, even pockets the flood cannot reach (the
+  // gaps between the monkey's ears and its head)
+  for (const [bx0, by0, bx1, by1] of spec.clear || []) for (let y = by0; y < by1; y++) for (let x = bx0; x < bx1; x++) if (near[y * W + x]) out[y * W + x] = 1;
   for (let p = 0, o = 0; p < W * H; p++, o += 4){
     if (!out[p]){ d[o + 3] = 255; continue; }
     d[o + 3] = Math.max(0, Math.min(255, (dist[p] - tol * 0.8) / (tol * 0.6) * 255));

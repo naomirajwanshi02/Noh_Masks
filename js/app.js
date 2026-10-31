@@ -8,7 +8,6 @@
 import { MASKS, BY_ID } from './data.js';
 import { scan, stopScan } from './scan.js';
 import * as Stage from './stage.js';
-import { sound } from './sound.js';
 
 const $ = (id) => document.getElementById(id);
 const q = new URLSearchParams(location.search);
@@ -17,7 +16,6 @@ const store = {
   set(k, v){ try { localStorage.setItem('noh.' + k, JSON.stringify(v)); } catch { /* private mode */ } },
 };
 const S = { phase: 'scan', mask: BY_ID[q.get('mask')] ? q.get('mask') : store.get('mask', 'hannya'), photoUrl: null, hintTimer: 0 };
-sound.on = store.get('sound', true);
 
 const overlay = (id, on) => $(id).classList.toggle('on', on);
 const show = (id) => document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('on', s.id === id));
@@ -45,7 +43,6 @@ async function openPerm(){
   show('perm');
 }
 async function askCamera(){
-  sound.unlock();
   $('permBtn').disabled = true;
   $('permStatus').textContent = 'Waiting for you to tap “Allow”…';
   try {
@@ -83,7 +80,7 @@ function onFound(){
   if (S.phase !== 'scan') return;
   S.phase = 'intro';
   overlay('guide', false);
-  sound.unlock(); sound.found(); buzz(40);
+  buzz(40);
   overlay('found', true);
   setTimeout(() => { overlay('found', false); openIntro(); }, 1300);
 }
@@ -100,7 +97,6 @@ function openIntro(){
 
 // The tap is the moment the browser asks for the selfie camera.
 async function startMasks(preview = false){
-  sound.unlock();
   $('goBtn').disabled = true;
   try {
     if (preview) Stage.startPreview($('ar'), { onFace });
@@ -152,10 +148,9 @@ async function select(id, { quiet = false } = {}){
   $('ncBlurb').textContent = m.blurb;
   $('namecard').classList.remove('pop'); void $('namecard').offsetWidth; $('namecard').classList.add('pop');
   overlay('carving', true);
-  if (!quiet){ sound.clack(); buzz(15); }
+  if (!quiet) buzz(15);
   await Stage.wear(id);
   overlay('carving', false);
-  sound.pon(0.9 + (m.n % 4) * 0.08);
   setHint();
 }
 
@@ -182,7 +177,7 @@ function onFace(has){ overlay('faceGuide', !has && S.phase === 'wear'); }
 
 async function takePhoto(){
   if (Stage.isBuilding()) return;
-  sound.shutter(); buzz(30);
+  buzz(30);
   $('flash').classList.remove('on'); void $('flash').offsetWidth; $('flash').classList.add('on');
   const blob = await Stage.snapshot();
   if (!blob) return;
@@ -201,9 +196,6 @@ async function takePhoto(){
 }
 
 // ------------------------------------------------------------ wiring
-// Sound needs a tap before it can play, so it unlocks on the first touch anywhere.
-addEventListener('pointerdown', () => sound.unlock(), { once: true, capture: true });
-
 $('permBtn').addEventListener('click', askCamera);
 $('scanRetry').addEventListener('click', openScan);
 $('scanSkip').addEventListener('click', () => { stopScan(); overlay('guide', false); openIntro(); });
@@ -211,12 +203,6 @@ $('goBtn').addEventListener('click', () => startMasks(false));
 $('previewBtn').addEventListener('click', () => startMasks(true));
 $('closeBtn').addEventListener('click', () => { clearInterval(S.hintTimer); overlay('hud', false); overlay('faceGuide', false); openScan(); });
 $('factBtn').addEventListener('click', () => { const m = BY_ID[S.mask]; toast(`<span class="cap">Did you know?</span><br>${m.fact}`, 6000); });
-$('soundBtn').addEventListener('click', () => {
-  sound.on = !sound.on; store.set('sound', sound.on);
-  $('soundBtn').classList.toggle('off', !sound.on);
-  sound.unlock(); sound.clack();
-});
-$('soundBtn').classList.toggle('off', !sound.on);
 $('shutter').addEventListener('click', takePhoto);
 $('photoBack').addEventListener('click', () => show(null));
 $('errBtn').addEventListener('click', () => { $('err').hidden = true; location.reload(); });

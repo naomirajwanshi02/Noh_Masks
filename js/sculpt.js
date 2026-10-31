@@ -9,7 +9,7 @@
 
 import { shellZ, faceZ } from './face-fit.js';
 
-export const SPAN = 24;          // the textures cover x and y from -12 to 12 cm
+export const SPAN = 30;          // the textures cover x and y from -15 to 15 cm (Ko-omote is tall)
 export const EYE = { x: 3.18, y: 2.63 };
 
 const TAU = Math.PI * 2;
@@ -152,7 +152,7 @@ export const insideOutline = (O, x, y) => {
 };
 
 // ------------------------------------------------------------------ painting
-export const TEX = 1024;
+export const TEX = 1280;
 // A 2D context drawing in centimetres with y up, over the whole texture.
 export function canvas2d(size = TEX, fill = null){
   const c = document.createElement('canvas');

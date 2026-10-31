@@ -40,12 +40,14 @@ const refSrc = (id) => new URL(`../assets/refs/${id}.jpg`, import.meta.url).href
 const relief = (def) => ({ k: 'fn', fn: (x, y) => def.photoData.relief(x, y) });
 const PHOTO_LOOK = { grimeK: 0.12, wearK: 0, mottle: 0, crack: 0, grain: 0.08, bump: 1.4 };
 // A thin shell standing off the face (a fox ear), painted from the reference where it sits.
-function photoShell(group, { H, THREE }, P, mat, { x0, x1, y0, y1, lean = 0.25, cup = 0.4, from = 10.5, back = 0.35 }){
+// `flatAt`: take the depth at that x across the whole width, so the part faces forward
+// instead of following the head round (the monkey's ears).
+function photoShell(group, { H, THREE }, P, mat, { x0, x1, y0, y1, lean = 0.25, cup = 0.4, from = 10.5, back = 0.35, flatAt = null }){
   const geo = new THREE.PlaneGeometry(x1 - x0, y1 - y0, 40, 60);
   const pos = geo.attributes.position, xc = (x0 + x1) / 2, hw = (x1 - x0) / 2;
   for (let i = 0; i < pos.count; i++){
     const x = pos.getX(i) + xc, y = pos.getY(i) + (y0 + y1) / 2;
-    const z = H.h(x, Math.min(y, from)) - back - Math.max(0, y - from) * lean - cup * (1 - ((x - xc) / hw) ** 2);
+    const z = H.h(flatAt ?? x, Math.min(y, from)) - back - Math.max(0, y - from) * lean - cup * (1 - ((x - xc) / hw) ** 2);
     pos.setXYZ(i, x, y, z);
   }
   geo.computeVertexNormals();
@@ -171,7 +173,11 @@ const CHUJO = {
     relief(CHUJO),
     ...sym(line([[0.35, 4.0], [0.9, 5.0], [2.3, 4.9], [4.5, 4.1]], 0.4, 0.45)),
     ...eyes({ socket: -0.5, lid: 0.22, rx: 0.5, ry: 0.18 }),
-    ...nose({ a: 1.9, w: 0.65, tip: 1.4, tipY: -1.4, top: 4.4, wing: 0.7, wingX: 1.5, tipA: 0.9, holes: false }),
+    // the broad, rounded nose of the painting: a full bulb over wide wings, nostrils tucked under
+    line([[0, 4.4], [0, 2.6], [0, 0.6], [0, -1.5]], [0.75, 1.5], [0.3, 1.35], { taper: 0.1 }),
+    blob(0, -1.2, 1.3, 0.95, 1.0),
+    ...sym(blob(1.75, -1.3, 0.8, 0.72, 0.75)),
+    ...sym(blob(1.35, -1.95, 0.4, 0.17, -0.35)),
     ...cheeks(0.45, 3.9, -1.3, 1.7),
     line([[-1.5, -4.15], [-0.8, -4.3], [0, -4.35], [0.8, -4.3], [1.5, -4.15]], 0.32, -0.7),
     blob(0, -7.5, 1.5, 1.2, 0.35),
@@ -185,13 +191,13 @@ const CHUJO = {
 const KOOMOTE = {
   id: 'koomote', seed: 31,
   photo: {
-    src: refSrc('koomote'), eyes: [[455, 590], [785, 590]], top: 12, topY: 11.9, chin: 1220, chinY: -9.5, relief: [1.8, 2.2],
+    src: refSrc('koomote'), eyes: [[455, 590], [785, 590]], top: 12, topY: 13.77, chin: 1220, chinY: -9.5, relief: [1.8, 2.2], // topY keeps the tall forehead at the painting's own proportions
     patches: [
       { x: 228, y: 498, rx: 16, ry: 50, from: [150, 640] }, { x: 262, y: 498, rx: 13, ry: 48, from: [272, 420] },
       { x: 1014, y: 492, rx: 16, ry: 50, from: [1110, 640] }, { x: 984, y: 492, rx: 13, ry: 48, from: [975, 420] },
     ],
   },
-  outline: { rx: 8.0, top: 12.55, bot: 9.4, chin: 0.25, n: 2.3 },
+  outline: { rx: 8.0, top: 14.6, bot: 9.4, chin: 0.25, n: 2.3 },
   look: { skin: '#eed0a6', grime: '#93683f', wear: '#fff2de', rough: 0.48, clearcoat: 0.15, ccRough: 0.45, ...PHOTO_LOOK },
   features: () => [
     relief(KOOMOTE),
@@ -237,6 +243,7 @@ const SARU = {
   id: 'saru', seed: 113,
   photo: {
     src: refSrc('saru'), eyes: [[315, 600], [540, 602]], eyeSpan: 5.3, top: 100, topY: 11.6, chin: 1112, chinY: -9.6, relief: [2.0, 2.6],
+    clear: [[30, 300, 160, 760], [695, 300, 825, 760]],
     patches: [
       { x: 60, y: 426, rx: 16, ry: 20, from: [20, 640] }, { x: 94, y: 426, rx: 14, ry: 17, from: [100, 520] },
       { x: 792, y: 430, rx: 14, ry: 20, from: [835, 640] }, { x: 764, y: 430, rx: 14, ry: 17, from: [755, 520] },
@@ -255,6 +262,13 @@ const SARU = {
     blob(0, -7.9, 2.0, 1.0, 0.35),
   ],
   paint(g){ drawPhoto(g, SARU.photoData); },
+  extras(group, ctx){
+    const P = SARU.photoData, mat = photoMaterial(ctx.THREE, P, { roughness: 0.55 });
+    for (const [a, b] of [[48, 140], [713, 805]]){ // the red ears and the flaps under them, from the painting
+      const [x0] = P.toCm(a, 0), [x1] = P.toCm(b, 0), [, y1] = P.toCm(0, 320), [, y0] = P.toCm(0, 740);
+      photoShell(group, ctx, P, mat, { x0, x1, y0, y1, from: 99, cup: -0.25, back: 0.6, flatAt: Math.sign(x0) * 7.2 });
+    }
+  },
 };
 
 export const DEFS = { kojo: KOJO, chujo: CHUJO, koomote: KOOMOTE, hannya: HANNYA, buaku: BUAKU, usofuki: USOFUKI, saru: SARU, kitsune: KITSUNE };

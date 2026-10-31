@@ -103,7 +103,6 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .iconbtn{width:46px;height:46px;border:0;border-radius:50%;background:var(--glass);color:var(--anatomy-strong);display:grid;place-items:center;
   box-shadow:var(--anatomy-lift),0 0 0 1px var(--anatomy-mid)}
 .iconbtn:active{transform:scale(.94)}
-.iconbtn.off #soundWaves{opacity:.15}
 
 .faceguide{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px}
 #faceGuide.on{display:flex}

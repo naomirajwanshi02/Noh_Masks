@@ -18,7 +18,7 @@ same stage. Made for ages 8–14.
 3. **Welcome.** Once the card is found, a short card explains Noh, Kyogen and the activity. Tapping **Allow camera & start**
    starts the selfie camera. This is when the browser asks for camera permission.
 4. **Wear.** MindAR *face* tracking (MediaPipe Face Landmarker) follows your face. The
-   mask is pinned to the whole-face pose (MindAR's faceMatrix) and then *skinned* to the live face landmarks, like a Snapchat lens: it fits your face shape, sits 2–6 mm off the skin, and its mouth and chin move with yours.
+   mask is pinned to the whole-face pose (MindAR's faceMatrix) and then *skinned* to the live face landmarks, like a Snapchat lens: it fits your face shape and sits 2–6 mm off the skin. Like a real carved mask, its mouth stays shut when you talk or open yours: the lips and jaw are left out of the skinning.
    The masks are carved in MindAR's own canonical face units (centimetres), so the eye
    holes sit over your real eyes. Pick a mask from the tray at the bottom.
 5. **Tilt.** The cue under the name panel invites you to tilt your head up and down, the
@@ -37,7 +37,7 @@ same stage. Made for ages 8–14.
 | 07 | **Saru** | 猿 | Kyogen | monkey | an olive fur cap with a widow's peak and fur down the sides, a beige face, red-rimmed round eyes, a split muzzle and a wide smile, red ears |
 | 08 | **Kitsune** | 狐 | Kyogen | fox | weathered cream lacquer, a red flame on the brow, red-lined amber eyes, black whiskers, a black nose, a curling red smile, tall ears with red insides |
 
-The look of each mask follows the reference paintings supplied for this project. **All eight masks are those paintings themselves** (`assets/refs/`): each is lined up so its pupils sit on the wearer's eyes, projected onto the carved shell from the front, and its light and shade carve the shell too, so from the front the mask is the painting and from the side it has depth. The paper is cut away, the cords are painted out, and Hannya's horns and the fox's ears are separate solids painted from the same picture (`js/photo.js`). Every fact in the app is sourced in [SOURCES.md](SOURCES.md).
+The look of each mask follows the reference paintings supplied for this project. **All eight masks are those paintings themselves** (`assets/refs/`): each is lined up so its pupils sit on the wearer's eyes, projected onto the carved shell from the front, and its light and shade carve the shell too, so from the front the mask is the painting and from the side it has depth. The paper is cut away, the cords are painted out, and Hannya's horns, the fox's ears and the monkey's ears are separate solids painted from the same picture (`js/photo.js`). Every fact in the app is sourced in [SOURCES.md](SOURCES.md).
 
 ### What makes them look real
 
@@ -53,10 +53,10 @@ No 3D model files are downloaded: each mask is built in the browser from its pai
   mapping and a studio environment for reflections.
 - **Room light.** Twice a second the camera image is sampled. Exposure and fill light
   then ease toward the room's brightness and colour, so the mask matches your lighting.
-- **Extra parts.** Hannya's horns and the fox's ears are separate solids, painted from
-  the same picture.
+- **Extra parts.** Hannya's horns, the fox's ears and the monkey's ears are separate
+  solids, painted from the same picture.
 
-Phones use 768 px textures, so a mask takes about a second to carve. The three most
+Phones use 896 px textures, so a mask takes about a second to carve. The three most
 recently used masks are kept ready.
 
 ## The Anatomy look
@@ -85,14 +85,13 @@ in the same sepia theme as Ramen_Builder:
 | File | What it is |
 |---|---|
 | `index.html` | The screens: viewfinder, welcome, mask room, photo. |
-| `js/app.js` | The flow: scan → welcome → camera → tray, plus hints, photo, sound and errors. |
+| `js/app.js` | The flow: scan → welcome → camera → tray, plus hints, photo and errors. |
 | `js/scan.js` | Card recognition (MindAR image). |
 | `js/stage.js` | Face AR (MindAR face): the mask pinned to the face pose, swapping masks, the no-camera preview, photos. |
 | `js/masks.js` | The eight mask designs: carving, paint, ORM, relief and extra parts. |
 | `js/sculpt.js` | Carving and painting tools: height features, outline, brushes, scrollwork. |
 | `js/build.js` | Turns a design into meshes and textures. Also has tapered tubes and hair ribbons. |
 | `js/look.js` | Lighting, environment, tone mapping and room-light matching. |
-| `js/sound.js` | Kotsuzumi drum, hyoshigi clappers and shutter, made with WebAudio. |
 | `js/data.js` | Names, kanji, roles, kid-friendly blurbs and facts. |
 | `tools/mask-sheet.html` | Renders every mask. `?id=hannya&yaw=0.5` shows one up close. `?save=1` rewrites `assets/thumbs/`. |
 | `tools/compare.html` | Renders each mask beside its reference painting from `tools/refs/<id>.jpg` (the references are kept out of git). |

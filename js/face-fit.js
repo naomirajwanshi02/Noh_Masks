@@ -5,12 +5,14 @@
 //    millimetres in front of it, instead of a generic egg.
 // 2. Follow: every vertex of a built mask is tied to its nearest face landmarks. Each
 //    frame the landmarks' live positions (your face's own shape, jaw, cheeks) move the
-//    vertices with them, so the mask stretches with your face and opens with your mouth.
+//    vertices with them, so the mask stretches with your face. A carved mask has a
+//    fixed mouth, so the lips and jaw are left out: talking or opening your mouth does
+//    not open the mask.
 
 import { positions as LM, faces } from './face-model.js';
 
 // ------------------------------------------------------------------ 1 · the face surface
-const SPAN = 22, N = 176, CELL = SPAN / N; // a depth map of the face over x, y in [-11, 11] cm
+const SPAN = 30, N = 240, CELL = SPAN / N; // a depth map of the face over x, y in [-15, 15] cm
 function rasterise(){
   const z = new Float32Array(N * N).fill(-Infinity);
   const toG = (v) => (v + SPAN / 2) / CELL - 0.5;
@@ -31,6 +33,7 @@ function rasterise(){
   // beyond the face (hairline, under the chin, past the cheeks) continue the surface outward
   const known = new Uint8Array(N * N);
   for (let k = 0; k < N * N; k++) known[k] = z[k] > -Infinity ? 1 : 0;
+  const face = Float32Array.from(known);
   for (let pass = 0; pass < N; pass++){
     let changed = 0;
     const next = z.slice(), nk = known.slice();
@@ -50,7 +53,7 @@ function rasterise(){
     z.set(next); known.set(nk);
     if (!changed) break;
   }
-  return z;
+  return { z, face };
 }
 function blur(src, r){
   let a = Float32Array.from(src), b = new Float32Array(N * N);
@@ -66,7 +69,14 @@ function blur(src, r){
   }
   return a;
 }
-const RAW = rasterise();
+// The fill steps out cell by cell, which leaves faint diamond-shaped terraces; off the
+// face (the head above a tall mask, the sides) a heavy blur takes them out.
+const RAW = (() => {
+  const { z, face } = rasterise();
+  const B = blur(z, 16), w = blur(face, 4);
+  for (let k = 0; k < N * N; k++){ const t = Math.min(1, 2 * w[k]); z[k] = z[k] * t + B[k] * (1 - t); }
+  return z;
+})();
 // Smoothed by about 1.5 cm: the shell bridges the eyes and the nose (the carving adds
 // its own nose), but follows the forehead, cheeks, jaw and chin.
 const SMOOTH = blur(RAW, 6), FLAT = blur(RAW, 16);
@@ -91,7 +101,10 @@ const EYELIDS = new Set([33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158
   263, 249, 390, 373, 374, 380, 381, 382, 362, 398, 384, 385, 386, 387, 388, 466,
   130, 25, 110, 24, 23, 22, 26, 112, 243, 190, 56, 28, 27, 29, 30, 247,
   359, 255, 339, 254, 253, 252, 256, 341, 463, 414, 286, 258, 257, 259, 260, 467]);
-const USE = LM.map((_, i) => i).filter((i) => !EYELIDS.has(i));
+// Lips and jaw are left out too: everything below the base of the nose. The lower part
+// of the mask then follows the nose and cheeks, which stay put when the mouth opens.
+const JAW_Y = -2.2;
+const USE = LM.map((_, i) => i).filter((i) => !EYELIDS.has(i) && LM[i][1] > JAW_Y);
 const K = 6, SIGMA = 1.1;
 
 // Ties every vertex of every mesh in the mask to its K nearest landmarks.
