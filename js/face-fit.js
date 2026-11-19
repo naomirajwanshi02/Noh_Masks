@@ -85,7 +85,10 @@ function sample(arr, x, y){
   const i = u | 0, j = v | 0, fx = u - i, fy = v - j, k = j * N + i;
   return (arr[k] * (1 - fx) + arr[k + 1] * fx) * (1 - fy) + (arr[k + N] * (1 - fx) + arr[k + N + 1] * fx) * fy;
 }
-export const faceZ = (x, y) => sample(RAW, x, y);
+// lightly smoothed: the raw raster is stepped cell by cell, and a mask pressed against
+// it (a nose resting on the wearer's nose) would show the steps as blocky shading
+const SOFT = blur(RAW, 2);
+export const faceZ = (x, y) => sample(SOFT, x, y);
 export const faceShell = (x, y) => sample(SMOOTH, x, y);
 // The shell masks are carved from: 3.5 mm in front of the smoothed face. Over the nose it
 // uses a much flatter version, because each mask carves its own nose on top.
