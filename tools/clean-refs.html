@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Noh Masks — clean references</title>
+<style>body{margin:0;padding:12px;background:#ecdfc6;color:#3b2a1c;font:13px/1.5 ui-monospace,Consolas,monospace}</style>
+</head><body>
+<p>Cleans each painting in <code>assets/refs/</code> (edge-preserving smooth, crisp edges, colour lift; <code>js/photo.js</code> cleanPaint) and writes <code>assets/clean/&lt;id&gt;.jpg</code> through <code>tools/serve.ps1</code>. The masks load these.</p>
+<pre id="log"></pre>
+<script type="module">
+import { cleanPaint } from '../js/photo.js';
+const ids = ['kojo', 'chujo', 'koomote', 'hannya', 'buaku', 'usofuki', 'saru', 'kitsune'];
+const log = (s) => { document.getElementById('log').textContent += s + '\n'; };
+for (const id of ids){
+  const img = new Image(); img.src = `../assets/refs/${id}.jpg`;
+  await new Promise((ok, no) => { img.onload = ok; img.onerror = no; });
+  const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+  const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0);
+  const data = g.getImageData(0, 0, c.width, c.height);
+  cleanPaint(data.data, c.width, c.height);
+  g.putImageData(data, 0, 0);
+  // toDataURL, not toBlob: toBlob can stall while the tab is in the background
+  const blob = await (await fetch(c.toDataURL('image/jpeg', 0.93))).blob();
+  const res = await fetch(`/__save?name=${encodeURIComponent(`assets/clean/${id}.jpg`)}`, { method: 'POST', body: blob });
+  log(`${id}.jpg ${res.ok ? 'saved' : 'FAILED ' + res.status} (${Math.round(blob.size / 1024)} KB)`);
+}
+window.__done = true;
+</script></body></html>

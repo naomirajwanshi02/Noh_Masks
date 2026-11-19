@@ -131,6 +131,7 @@ function paint(def, H, O, holes, size){
   const crackF = P.crackScale || 2.2, crackK = P.crack ?? 0.5, grainK = P.grain ?? 0.6;
   const holeT = holes.map((h) => ({ ...h, c: Math.cos(h.rot), s: Math.sin(h.rot) }));
   const R = rng(def.seed);
+  const photo = !!def.photo; // a painted mask: its surface stays clean lacquer, no gesso noise
   for (let py = 0; py < S; py++){
     const y = SPAN / 2 - (py + 0.5) * cm, gv = py * k2g - 0.5;
     for (let px = 0; px < S; px++){
@@ -163,13 +164,23 @@ function paint(def, H, O, holes, size){
       ad[o + 3] = alpha;
       // occlusion, roughness, metalness
       md[o] = 255 * (1 - 0.65 * smooth(0.02, 0.6, ocl));
-      md[o + 1] = Math.min(255, md[o + 1] + 40 * g + 22 * (patch - 0.5) + 30 * w);
+      md[o + 1] = Math.min(255, md[o + 1] + 40 * g + (photo ? 0 : 22 * (patch - 0.5)) + 30 * w);
       // fine relief: wood grain under the paint, crackle, gesso tooth
       const grain = (vnoise(x * 34, y * 1.4, def.seed + 3) - 0.5) * grainK;
-      hgt[py * S + px] = (dd[o] - 128) / 128 + grain * 0.35 - crackLine * 0.5 + (R() - 0.5) * 0.06 * (1 - metal);
+      hgt[py * S + px] = (dd[o] - 128) / 128 + grain * 0.35 - crackLine * 0.5 + (photo ? 0 : (R() - 0.5) * 0.06 * (1 - metal));
     }
   }
   A.g.putImageData(a, 0, 0);
+  // A painted mask keeps the painting's full sharpness: its colour is drawn again at a
+  // higher resolution (the painting itself, the spy-holes cut out), not resampled from S.
+  let albedo = A.c;
+  if (photo){
+    const HS = Math.min(2048, Math.round(S * 1.5)), Hc = canvas2d(HS);
+    def.paint(Hc.g, { H, O });
+    Hc.g.globalCompositeOperation = 'destination-out';
+    for (const h of holeT){ Hc.g.beginPath(); Hc.g.ellipse(h.x, h.y, h.rx, h.ry, h.rot, 0, Math.PI * 2); Hc.g.fill(); }
+    albedo = Hc.c;
+  }
   M.g.putImageData(m, 0, 0);
   // relief → tangent-space normals (y up, as three expects)
   const k = P.bump ?? 3;
@@ -184,11 +195,11 @@ function paint(def, H, O, holes, size){
   const B = document.createElement('canvas');
   B.width = B.height = 512;
   const bg = B.getContext('2d');
-  bg.drawImage(A.c, 0, 0, 512, 512);
+  bg.drawImage(albedo, 0, 0, 512, 512);
   const bd = bg.getImageData(0, 0, 512, 512);
   for (let i = 0; i < bd.data.length; i += 4){ const v = bd.data[i + 3]; bd.data[i] = bd.data[i + 1] = bd.data[i + 2] = v; bd.data[i + 3] = 255; }
   bg.putImageData(bd, 0, 0);
-  return { albedo: A.c, orm: M.c, normal: D.c, alpha: B };
+  return { albedo, orm: M.c, normal: D.c, alpha: B };
 }
 function crackleAt(x, y, seed){
   const ix = Math.floor(x), iy = Math.floor(y);
@@ -296,7 +307,9 @@ export function buildMask(def, { maxAniso = 4, size = TEX } = {}){
   const front = new THREE.MeshPhysicalMaterial({
     map, normalMap: nmap, roughnessMap: orm, metalnessMap: orm, aoMap: orm, aoMapIntensity: 0.85,
     roughness: 1, metalness: 1, alphaTest: 0.5, envMapIntensity: L.env ?? 0.55,
-    clearcoat: L.clearcoat ?? 0.15, clearcoatRoughness: L.ccRough ?? 0.4,
+    // painted masks get a crisp lacquer coat: tight highlights that show the carved form
+    clearcoat: def.photo ? Math.max(L.clearcoat ?? 0, 0.3) : L.clearcoat ?? 0.15,
+    clearcoatRoughness: def.photo ? Math.min(L.ccRough ?? 1, 0.22) : L.ccRough ?? 0.4,
     sheen: L.sheen ?? 0, sheenColor: new THREE.Color(L.sheenColor || '#ffffff'), sheenRoughness: 0.6,
   });
   const back = new THREE.MeshStandardMaterial({ color: L.back || '#2a170c', roughness: 0.5, metalness: 0.05, alphaMap: amap, alphaTest: 0.5 });

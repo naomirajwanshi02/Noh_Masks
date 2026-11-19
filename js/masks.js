@@ -36,9 +36,10 @@ const cheeks = (a = 0.42, x = 3.6, y = -1.3, s = 1.8) => sym(blob(x, y, s, s, a)
 // ------------------------------------------------------------------ the masks
 // Pixel positions below are read off the paintings: the pupils (or, for the masks with
 // close-set painted eyes, the eyes plus an `eyeSpan`), the top of the head and the chin.
-const refSrc = (id) => new URL(`../assets/refs/${id}.jpg`, import.meta.url).href;
+// the paintings as shipped: cleaned of watercolour blotches by tools/clean-refs.html
+const refSrc = (id) => new URL(`../assets/clean/${id}.jpg`, import.meta.url).href;
 const relief = (def) => ({ k: 'fn', fn: (x, y) => def.photoData.relief(x, y) });
-const PHOTO_LOOK = { grimeK: 0.12, wearK: 0, mottle: 0, crack: 0, grain: 0.08, bump: 1.4 };
+const PHOTO_LOOK = { grimeK: 0.12, wearK: 0, mottle: 0, crack: 0, grain: 0, bump: 1.4 };
 // A thin shell standing off the face (a fox ear), painted from the reference where it sits.
 // `flatAt`: take the depth at that x across the whole width, so the part faces forward
 // instead of following the head round (the monkey's ears).
@@ -75,7 +76,15 @@ const KITSUNE = {
     ...sym(blob(3.9, -1.6, 1.7, 1.6, 0.45)),
     blob(0, -7.0, 1.4, 1.4, 0.3),
   ],
-  paint(g){ drawPhoto(g, KITSUNE.photoData); },
+  paint(g){
+    const P = KITSUNE.photoData;
+    drawPhoto(g, P);
+    // above the ear bases the ear parts carry the painting, so the shell's own edge never
+    // cuts across painted ears as a dark line
+    g.save(); g.globalCompositeOperation = 'destination-out'; g.beginPath();
+    for (const [px, py] of [[0, -50], [0, 640], [70, 598], [200, 445], [330, 330], [385, 292], [427, 278], [470, 292], [525, 330], [655, 445], [785, 598], [853, 640], [853, -50]]) g.lineTo(...P.toCm(px, py));
+    g.fill(); g.restore();
+  },
   extras(group, ctx){
     const P = KITSUNE.photoData, mat = photoMaterial(ctx.THREE, P, { roughness: 0.68 });
     for (const s of [1, -1]){ // the ears, from the painting

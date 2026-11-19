@@ -37,7 +37,7 @@ same stage. Made for ages 8–14.
 | 07 | **Saru** | 猿 | Kyogen | monkey | an olive fur cap with a widow's peak and fur down the sides, a beige face, red-rimmed round eyes, a split muzzle and a wide smile, red ears |
 | 08 | **Kitsune** | 狐 | Kyogen | fox | weathered cream lacquer, a red flame on the brow, red-lined amber eyes, black whiskers, a black nose, a curling red smile, tall ears with red insides |
 
-The look of each mask follows the reference paintings supplied for this project. **All eight masks are those paintings themselves** (`assets/refs/`): each is lined up so its pupils sit on the wearer's eyes, projected onto the carved shell from the front, and its light and shade carve the shell too, so from the front the mask is the painting and from the side it has depth. The paper is cut away, the cords are painted out, and Hannya's horns, the fox's ears and the monkey's ears are separate solids painted from the same picture (`js/photo.js`). Every fact in the app is sourced in [SOURCES.md](SOURCES.md).
+The look of each mask follows the reference paintings supplied for this project. **All eight masks are those paintings themselves** (`assets/refs/`): each is lined up so its pupils sit on the wearer's eyes, projected onto the carved shell from the front, and its light and shade carve the shell too, so from the front the mask is the painting and from the side it has depth. Before use, each painting is cleaned (`tools/clean-refs.html` → `assets/clean/`): an edge-preserving smooth takes out the watercolour blotches and paper grain while keeping every drawn line sharp, so the paint reads as smooth lacquer. The paper is cut away, the cords are painted out, and Hannya's horns, the fox's ears and the monkey's ears are separate solids painted from the same picture (`js/photo.js`). Every fact in the app is sourced in [SOURCES.md](SOURCES.md).
 
 ### What makes them look real
 
@@ -47,16 +47,17 @@ No 3D model files are downloaded: each mask is built in the browser from its pai
   model), a few millimetres off the skin. The painting's light and shade add relief on
   top, and a few carved features add what a painting cannot: a nose that stands out,
   bulging eyeballs, cheeks and a mouth set back. Spy-holes are cut where the pupils are.
-- **The paint.** The painting is projected onto the shell from the front, with the
-  paper cut away, into a texture set (colour, occlusion, roughness and a normal map).
-  The material uses `MeshPhysicalMaterial` with a light lacquer clear-coat, filmic tone
-  mapping and a studio environment for reflections.
+- **The paint.** The cleaned painting is projected onto the shell from the front, with the
+  paper cut away, at 1.5× the resolution of the other maps so it stays sharp, into a
+  texture set (colour, occlusion, roughness and a noise-free normal map). The material
+  uses `MeshPhysicalMaterial` with a glossy lacquer clear-coat, filmic tone mapping and a
+  studio environment for reflections.
 - **Room light.** Twice a second the camera image is sampled. Exposure and fill light
   then ease toward the room's brightness and colour, so the mask matches your lighting.
 - **Extra parts.** Hannya's horns, the fox's ears and the monkey's ears are separate
   solids, painted from the same picture.
 
-Phones use 896 px textures, so a mask takes about a second to carve. The three most
+Phones use 896 px maps (1,344 px for the paint), so a mask takes a second or two to carve. The three most
 recently used masks are kept ready.
 
 ## The Anatomy look
@@ -94,6 +95,7 @@ in the same sepia theme as Ramen_Builder:
 | `js/look.js` | Lighting, environment, tone mapping and room-light matching. |
 | `js/data.js` | Names, kanji, roles, kid-friendly blurbs and facts. |
 | `tools/mask-sheet.html` | Renders every mask. `?id=hannya&yaw=0.5` shows one up close. `?save=1` rewrites `assets/thumbs/`. |
+| `tools/clean-refs.html` | Cleans the paintings in `assets/refs/` (edge-preserving smooth, crisp edges, colour lift) and writes `assets/clean/`, which the masks load. |
 | `tools/compare.html` | Renders each mask beside its reference painting from `tools/refs/<id>.jpg` (the references are kept out of git). |
 | `tools/fit-check.html` | Shows a mask on MindAR's face model (side, front, and with the jaw dropped through the skinning) and prints how far it sits from the face. |
 | `js/photo.js` | Turns a reference painting into a mask: lines it up on the face, cuts away the paper, paints out cords, carves relief from its shading, and paints parts (horns, ears) from it. |

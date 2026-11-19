@@ -39,6 +39,62 @@ function blur(a, n, r){
   return s;
 }
 
+// A box average of radius r, through a summed-area table (cost does not grow with r).
+function boxMean(src, W, H, r){
+  const S = new Float64Array((W + 1) * (H + 1)), out = new Float32Array(W * H), W1 = W + 1;
+  for (let y = 0; y < H; y++){
+    let row = 0;
+    for (let x = 0; x < W; x++){ row += src[y * W + x]; S[(y + 1) * W1 + x + 1] = S[y * W1 + x + 1] + row; }
+  }
+  for (let y = 0; y < H; y++){
+    const y0 = Math.max(0, y - r), y1 = Math.min(H, y + r + 1);
+    for (let x = 0; x < W; x++){
+      const x0 = Math.max(0, x - r), x1 = Math.min(W, x + r + 1);
+      out[y * W + x] = (S[y1 * W1 + x1] - S[y0 * W1 + x1] - S[y1 * W1 + x0] + S[y0 * W1 + x0]) / ((y1 - y0) * (x1 - x0));
+    }
+  }
+  return out;
+}
+// Cleans the watercolour: an edge-preserving smooth (a guided filter, steered by the
+// painting's own brightness) flattens the blotches and paper grain inside each area of
+// colour but keeps the drawn edges (brows, eye lines, lips, hair strands) sharp; a light
+// unsharp mask then crisps those edges. The paint reads as smooth lacquer, not paper.
+export function cleanPaint(d, W, H, { r = 12, eps = 0.006, sharpen = 0.5, sat = 1.3, gamma = 1.12 } = {}){
+  const n = W * H, I = new Float32Array(n), ch = [new Float32Array(n), new Float32Array(n), new Float32Array(n)];
+  for (let p = 0, o = 0; p < n; p++, o += 4){
+    ch[0][p] = d[o] / 255; ch[1][p] = d[o + 1] / 255; ch[2][p] = d[o + 2] / 255;
+    I[p] = 0.3 * ch[0][p] + 0.55 * ch[1][p] + 0.15 * ch[2][p];
+  }
+  const mI = boxMean(I, W, H, r), II = new Float32Array(n);
+  for (let p = 0; p < n; p++) II[p] = I[p] * I[p];
+  const mII = boxMean(II, W, H, r), t = new Float32Array(n), a = new Float32Array(n), b = new Float32Array(n);
+  for (let c = 0; c < 3; c++){
+    const P = ch[c], mP = boxMean(P, W, H, r);
+    for (let p = 0; p < n; p++) t[p] = I[p] * P[p];
+    const mIP = boxMean(t, W, H, r);
+    for (let p = 0; p < n; p++){
+      const A = (mIP[p] - mI[p] * mP[p]) / (mII[p] - mI[p] * mI[p] + eps);
+      a[p] = A; b[p] = mP[p] - A * mI[p];
+    }
+    const ma = boxMean(a, W, H, r), mb = boxMean(b, W, H, r);
+    for (let p = 0; p < n; p++) t[p] = ma[p] * I[p] + mb[p];
+    const soft = boxMean(t, W, H, 2);
+    for (let p = 0, o = c; p < n; p++, o += 4){
+      const v = t[p] + sharpen * (t[p] - soft[p]);
+      d[o] = v < 0 ? 0 : v > 1 ? 255 : v * 255;
+    }
+  }
+  // the renderer's filmic tone curve greys out bright painted colour; a little more
+  // saturation and depth here brings it back to the painting's warmth on screen
+  for (let p = 0, o = 0; p < n; p++, o += 4){
+    const l = (0.3 * d[o] + 0.55 * d[o + 1] + 0.15 * d[o + 2]) / 255;
+    for (let c = 0; c < 3; c++){
+      const v = Math.pow(Math.max(0, l + (d[o + c] / 255 - l) * sat), gamma);
+      d[o + c] = v > 1 ? 255 : v * 255;
+    }
+  }
+}
+
 // spec: { src, eyes: [[px,py],[px,py]], chin: py (→ chinY cm), top: py, paper: tolerance,
 //         patches: [{ x, y, rx, ry, from: [px,py] }] (paint over bits, e.g. cords), relief: [fine, broad],
 //         clear: [[x0,y0,x1,y1]] (boxes where all paper colour is cut away) }
@@ -56,6 +112,8 @@ export async function loadPhoto(spec){
   }
   // the paper becomes transparent: compare with the paper colour from the corners
   const data = g.getImageData(0, 0, W, H), d = data.data;
+  // the shipped paintings are already cleaned (tools/clean-refs.html); `clean` redoes it live
+  if (spec.clean) cleanPaint(d, W, H, spec.clean === true ? {} : spec.clean);
   const paper = [0, 0, 0];
   for (const [x, y] of [[4, 4], [W - 5, 4], [4, H - 5], [W - 5, H - 5]]){ const o = (y * W + x) * 4; paper[0] += d[o] / 4; paper[1] += d[o + 1] / 4; paper[2] += d[o + 2] / 4; }
   const tol = spec.paper ?? 26;
