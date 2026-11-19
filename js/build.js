@@ -43,39 +43,27 @@ function frontGeometry(H, O){
   return g;
 }
 
-// The edge rolls over into a thick rim, as on a carved mask, and the back follows the
-// front at the shell's thickness. The rim (`lip` deep at the edge) is its own group so it
-// can wear the front's paint; its texture is read a little inside the edge, where the
-// paint is solid.
-function backGeometry(H, O, thick = 0.42, lip = 0.85){
+// The edge rolls over and the back follows the front at a mask's thickness.
+function backGeometry(H, O, thick = 0.42){
   const hb = (x, y) => Math.min(H.h(x, y) - thick, baseZ(x, y) + 0.35 * Math.max(H.feat(x, y), 0) - thick);
-  const rings = [], ringUV = [];
+  const rings = [];
   const Rs = Array.from({ length: NT }, (_, j) => O.R((j / NT) * TAU));
-  const ring = (f, inset = null) => {
-    rings.push(Array.from({ length: NT }, (_, j) => f((j / NT) * TAU, Rs[j])));
-    ringUV.push(inset === null ? null : Array.from({ length: NT }, (_, j) => edge((j / NT) * TAU, Rs[j] - inset)));
-  };
+  const ring = (f) => Array.from({ length: NT }, (_, j) => f((j / NT) * TAU, Rs[j]));
   const edge = (t, R) => [Math.cos(t) * R, O.cy + Math.sin(t) * R];
-  const fz = (t, R) => H.h(...edge(t, R));
-  ring((t, R) => [...edge(t, R), fz(t, R)], 0.3);
-  ring((t, R) => [...edge(t, R + 0.07), fz(t, R) - 0.14], 0.3);              // the rounded lip
-  ring((t, R) => [...edge(t, R + 0.1), fz(t, R) - lip * 0.5], 0.3);
-  ring((t, R) => [...edge(t, R + 0.06), fz(t, R) - lip], 0.3);               // the rim's back edge
-  ring((t, R) => { const [x, y] = edge(t, R - 0.5); return [x, y, Math.min(hb(x, y), fz(t, R) - lip * 0.9)]; });
+  rings.push(ring((t, R) => { const [x, y] = edge(t, R); return [x, y, H.h(x, y)]; }));
+  rings.push(ring((t, R) => { const [x, y] = edge(t, R + 0.09); return [x, y, H.h(...edge(t, R)) - 0.2]; }));
+  rings.push(ring((t, R) => { const [x, y] = edge(t, R + 0.05); return [x, y, H.h(...edge(t, R)) - thick - 0.05]; }));
+  rings.push(ring((t, R) => { const [x, y] = edge(t, R - 0.2); return [x, y, hb(x, y)]; }));
   const NB = 40;
   for (let i = NB - 1; i >= 1; i--){
-    const r = (i / NB) * ((Rs[0] - 0.5) / Rs[0]);
-    ring((t, R) => { const x = Math.cos(t) * r * R, y = O.cy + Math.sin(t) * r * R; return [x, y, hb(x, y)]; });
+    const r = (i / NB) * ((Rs[0] - 0.2) / Rs[0]);
+    rings.push(ring((t, R) => { const x = Math.cos(t) * r * R, y = O.cy + Math.sin(t) * r * R; return [x, y, hb(x, y)]; }));
   }
   const pos = [], uv = [], idx = [];
-  rings.forEach((rg, i) => rg.forEach(([x, y, z], j) => {
-    const [u, v] = ringUV[i] ? ringUV[i][j] : [x, y];
-    pos.push(x, y, z); uv.push((u + SPAN / 2) / SPAN, (v + SPAN / 2) / SPAN);
-  }));
+  for (const rg of rings) for (const [x, y, z] of rg){ pos.push(x, y, z); uv.push((x + SPAN / 2) / SPAN, (y + SPAN / 2) / SPAN); }
   const c = pos.length / 3;
   pos.push(0, O.cy, hb(0, O.cy)); uv.push(0.5, (O.cy + SPAN / 2) / SPAN);
   const at = (i, j) => i * NT + (j % NT);
-  const RIM = 3; // the rim's strips; the rest is the back
   for (let i = 0; i < rings.length - 1; i++) for (let j = 0; j < NT; j++){
     const a = at(i, j), b = at(i + 1, j), cc = at(i + 1, j + 1), d = at(i, j + 1);
     idx.push(a, b, cc, a, cc, d);
@@ -86,36 +74,8 @@ function backGeometry(H, O, thick = 0.42, lip = 0.85){
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
   g.setIndex(idx);
-  g.addGroup(0, RIM * NT * 6, 0);
-  g.addGroup(RIM * NT * 6, idx.length - RIM * NT * 6, 1);
   g.computeVertexNormals();
   return g;
-}
-
-// A painted mask's own edge: going round the outline, the outermost painted point (read
-// from the paint's alpha), smoothed, never beyond the outline. The shell then ends where
-// the paint ends, so its rim closes the mask instead of being cut away.
-function paintedOutline(O, alphaCanvas){
-  const n = alphaCanvas.width, d = alphaCanvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, n, n).data;
-  const at = (x, y) => {
-    const px = Math.floor((x + SPAN / 2) / SPAN * n), py = Math.floor((SPAN / 2 - y) / SPAN * n);
-    return px < 0 || py < 0 || px >= n || py >= n ? 0 : d[(py * n + px) * 4];
-  };
-  const M = 720, raw = new Float32Array(M);
-  for (let k = 0; k < M; k++){
-    const t = (k / M) * TAU, R0 = O.R(t), c = Math.cos(t), s = Math.sin(t);
-    let r = R0;
-    while (r > R0 * 0.35 && at(c * r, O.cy + s * r) < 140) r -= 0.025;
-    raw[k] = r;
-  }
-  // smooth round the edge (wisps of hair or a stray speck should not make spikes)
-  const sm = new Float32Array(M), W = 4;
-  for (let k = 0; k < M; k++){ let s = 0; for (let q = -W; q <= W; q++) s += raw[(k + q + M) % M]; sm[k] = s / (2 * W + 1); }
-  const R = (t) => {
-    const f = ((t / TAU) % 1 + 1) % 1 * M, k = Math.floor(f), w = f - k;
-    return Math.min(O.R(t), sm[k % M] * (1 - w) + sm[(k + 1) % M] * w - 0.08);
-  };
-  return { R, cy: O.cy };
 }
 
 // ------------------------------------------------------------------ textures
@@ -337,10 +297,9 @@ export function buildMask(def, { maxAniso = 4, size = TEX } = {}){
   const t0 = performance.now();
   const features = def.features();
   const H = heightField(features);
-  const O0 = outline(def.outline);
+  const O = outline(def.outline);
   const holes = features.filter((f) => f.k === 'hole');
-  const tex = paint(def, H, O0, holes, size);
-  const O = def.photo ? paintedOutline(O0, tex.alpha) : O0;
+  const tex = paint(def, H, O, holes, size);
   const L = def.look;
 
   const map = texture(tex.albedo, true, maxAniso), orm = texture(tex.orm, false, maxAniso), nmap = texture(tex.normal, false, maxAniso);
@@ -356,13 +315,8 @@ export function buildMask(def, { maxAniso = 4, size = TEX } = {}){
   const back = new THREE.MeshStandardMaterial({ color: L.back || '#2a170c', roughness: 0.5, metalness: 0.05, alphaMap: amap, alphaTest: 0.5 });
   const g = new THREE.Group();
   g.name = def.id;
-  // the rim wears the front's paint, a shade darker where it turns away from the light
-  const rimMat = new THREE.MeshPhysicalMaterial({
-    map, color: '#c9bcb0', roughness: 0.5, metalness: 0, envMapIntensity: L.env ?? 0.55,
-    clearcoat: front.clearcoat, clearcoatRoughness: front.clearcoatRoughness,
-  });
   const fm = new THREE.Mesh(frontGeometry(H, O), front);
-  const bm = new THREE.Mesh(backGeometry(H, O), [rimMat, back]);
+  const bm = new THREE.Mesh(backGeometry(H, O), back);
   fm.name = 'front'; bm.name = 'back';
   g.add(fm, bm);
   def.extras?.(g, { H, O, THREE, rng: rng(def.seed + 11), maps: { map, orm, nmap } });

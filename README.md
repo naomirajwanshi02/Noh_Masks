@@ -44,8 +44,7 @@ The look of each mask follows the reference paintings supplied for this project.
 No 3D model files are downloaded: each mask is built in the browser from its painting.
 
 - **The surface.** Each mask is a shell carved over the wearer's face (MindAR's face
-  model), a few millimetres off the skin. Its edge follows the painted edge and rolls over
-  into a thick, rounded rim (about 8 mm), so from the side it reads as a solid carved mask. The painting's light and shade add relief on
+  model), a few millimetres off the skin. The painting's light and shade add relief on
   top, and a few carved features add what a painting cannot: a nose that stands out,
   bulging eyeballs, cheeks and a mouth set back. Spy-holes are cut where the pupils are.
 - **The paint.** The cleaned painting is projected onto the shell from the front, with the
