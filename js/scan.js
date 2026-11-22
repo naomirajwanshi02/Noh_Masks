@@ -1,6 +1,6 @@
-// Card recognition: MindAR image tracking (mind-ar 1.2.5 + three 0.160.0, the same
+// Picture recognition: MindAR image tracking (mind-ar 1.2.5 + three 0.160.0, the same
 // pins as Ramen_Builder and sushi-ar) watches the back camera until it sees the
-// Noh and Kyogen Masks card, then shuts down completely so the selfie camera can take over.
+// red Hannya painting (target.jpg), then shuts down completely so the selfie camera can take over.
 
 const params = new URLSearchParams(location.search);
 export const TARGET_SRC = params.get('target') || './targets.mind';
@@ -9,7 +9,7 @@ let current = null;
 
 export async function scan(container, { onStatus, onFound }){
   stopScan();
-  onStatus('Loading the card scanner…');
+  onStatus('Loading the scanner…');
   const { MindARThree } = await import('mindar-image-three');
   const mindar = new MindARThree({
     container, imageTargetSrc: TARGET_SRC, uiScanning: 'no', uiLoading: 'no', uiError: 'no',
@@ -29,7 +29,7 @@ export async function scan(container, { onStatus, onFound }){
   catch (e){ stopScan(); throw e || new Error('camera unavailable'); }
   if (found) return;
   mindar.renderer.setAnimationLoop(() => mindar.renderer.render(mindar.scene, mindar.camera));
-  onStatus('Looking for the card…');
+  onStatus('Looking for the Hannya picture…');
 }
 
 export function stopScan(){

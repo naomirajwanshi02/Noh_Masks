@@ -1,21 +1,21 @@
 # 👺 Noh and Kyogen Masks: a scan-to-wear WebAR mask room
 
-Point your phone at the printed **Noh & Kyogen Masks card**. When the card is recognised
+Point your phone at the printed **red Hannya painting**. When the picture is recognised
 the mask room opens. Turn the camera round to yourself, pick one of eight traditional
 Japanese masks from the bottom row, and wear it on your face, then take a photo.
 Four masks come from **Noh** and four from **Kyogen**, the comic plays performed on the
 same stage. Made for ages 8–14.
 
 **Play locally:** `http://localhost:8123/`
-**Without the card:** `?demo=1` · **Without any camera:** `?preview=1`
-**The card to scan:** [`target.png`](target.png)
+**Without the picture:** `?demo=1` · **Without any camera:** `?preview=1`
+**The picture to scan:** [`target.jpg`](target.jpg)
 
 ## How it works
 
 1. **Camera permission.** A plain first screen asks for the camera (nothing about the activity yet). **Allow camera** shows the browser's prompt; it is skipped if already allowed.
 2. **Scan.** The viewfinder opens. MindAR *image* tracking watches
-   the back camera until it sees the card, then shuts down.
-3. **Welcome.** Once the card is found, a short card explains Noh, Kyogen and the activity. Tapping **Allow camera & start**
+   the back camera until it sees the Hannya painting, then shuts down.
+3. **Welcome.** Once the painting is found, a short card explains Noh, Kyogen and the activity. Tapping **Allow camera & start**
    starts the selfie camera. This is when the browser asks for camera permission.
 4. **Wear.** MindAR *face* tracking (MediaPipe Face Landmarker) follows your face. The
    mask is pinned to the whole-face pose (MindAR's faceMatrix) and then *skinned* to the live face landmarks, like a Snapchat lens: it fits your face shape and sits 2–6 mm off the skin. Like a real carved mask, its mouth stays shut when you talk or open yours: the lips and jaw are left out of the skinning.
@@ -72,13 +72,13 @@ in the same sepia theme as Ramen_Builder:
   walnut ink token set. The kit is in [`vendor/anatomy/`](vendor/anatomy).
 - **The skill itself** is installed for this workspace at `../.claude/skills/anatomy`.
 
-## Printing the card
+## Printing the picture
 
-- Print `target.png` about **18 cm wide**. It is 3:2, so about 18 × 12 cm. Use **matte**
+- Print `target.jpg` (the red Hannya painting) about **15 cm wide**, so about 15 × 20 cm. Use **matte**
   paper.
-- Hold the phone 20–40 cm away, in even light. The card also works on a laptop or
+- Hold the phone 20–40 cm away, in even light. The picture also works on a laptop or
   tablet screen.
-- The compiled target scores **3,623 detection points over 11 scales, with 52 tracking
+- The compiled target scores **2,542 detection points over 13 scales, with 44 tracking
   points**. Ramen_Builder's card scores 3,847 / 58.
 
 ## Files
@@ -100,7 +100,7 @@ in the same sepia theme as Ramen_Builder:
 | `tools/fit-check.html` | Shows a mask on MindAR's face model (side, front, and with the jaw dropped through the skinning) and prints how far it sits from the face. |
 | `js/photo.js` | Turns a reference painting into a mask: lines it up on the face, cuts away the paper, paints out cords, carves relief from its shading, and paints parts (horns, ears) from it. |
 | `js/face-fit.js` / `js/face-model.js` | The face-fitted shell every mask is carved from, and the skinning that moves each vertex with its nearest face landmarks. |
-| `tools/make-target.html` | Redraws `target.png` from the thumbnails and compiles `targets.mind` (`?build=1`). |
+| `tools/make-target.html` | **2 · Compile** turns `target.jpg` into `targets.mind` (`?src=` picks another image). **1 · Draw** makes the old printed card, `target.png`. |
 | `tools/serve.ps1` | A local dev server. It needs no Node or Python; localhost counts as secure for the camera. |
 
 ## Run locally

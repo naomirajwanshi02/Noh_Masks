@@ -71,7 +71,7 @@ async function openScan(){
   } catch (err) {
     console.error(err);
     const msg = String(err?.message || err?.name || err || '');
-    $('scanStatus').textContent = /mind|fetch|404/i.test(msg) ? `Could not load the card data (${msg}).`
+    $('scanStatus').textContent = /mind|fetch|404/i.test(msg) ? `Could not load the picture data (${msg}).`
       : 'Camera not available. Allow camera access for this site in your browser settings, then tap Try again.';
     $('scanRetry').hidden = false;
   }
