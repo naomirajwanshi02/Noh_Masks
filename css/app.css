@@ -84,10 +84,6 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .hero-mask{width:150px;height:150px;object-fit:contain;margin:-6px auto -8px;filter:drop-shadow(0 8px 10px #3b2a1c55);animation:bob 3s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-6px) rotate(2deg)}}
 /* the info panel hides with its own cross and comes back with the i button */
-.namecard{position:relative;padding-right:40px}
-.namecard.hidden{display:none}
-.nc-close{position:absolute;top:8px;right:8px;width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:var(--anatomy-strong);display:grid;place-items:center;cursor:pointer}
-.nc-close:active{transform:scale(.92)}
 /* the welcome card's cross goes back to the scanner */
 .welcome{position:relative}
 .welcome .introclose{position:absolute;top:10px;right:10px;width:40px;height:40px;background:var(--anatomy-card);box-shadow:0 0 0 1.5px var(--anatomy-muted)}
@@ -107,6 +103,11 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .nc-main b{font-size:22px;font-weight:900;color:var(--anatomy-strong);line-height:1.1}
 .nc-main .jp{color:var(--anatomy-red);font-weight:700;font-size:15px}
 .nc-blurb{font-size:13.5px;line-height:1.3;margin-top:3px}
+/* same panel as Samurai_Wear: no empty band on top, a small cross in its corner */
+.hud-top .namecard{position:relative;flex:1;min-width:0;padding:10px 42px 8px 14px;pointer-events:auto;background:var(--glass)}
+.hud-top .namecard.hidden{display:none}
+.namecard .x{position:absolute;top:8px;right:8px;z-index:2;width:28px;height:28px;border:0;border-radius:50%;background:var(--anatomy-shade-2);color:var(--anatomy-strong);display:grid;place-items:center;padding:0;cursor:pointer}
+.namecard .x:active{transform:scale(.92)}
 .iconcol{display:flex;flex-direction:column;gap:6px;pointer-events:auto}
 .iconbtn{width:46px;height:46px;border:0;border-radius:50%;background:var(--glass);color:var(--anatomy-strong);display:grid;place-items:center;
   box-shadow:var(--anatomy-lift),0 0 0 1px var(--anatomy-mid)}

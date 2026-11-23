@@ -198,15 +198,17 @@ const HUB = 'https://naomirajwanshi02.github.io/Scan_To_Wear/';
 $('introClose').addEventListener('click', () => { stopScan(); location.href = HUB; });
 $('scanSkip').addEventListener('click', () => { stopScan(); overlay('guide', false); openIntro(); });
 $('goBtn').addEventListener('click', () => startMasks(false));
-$('previewBtn').addEventListener('click', () => startMasks(true));
 $('guideClose').addEventListener('click', () => { stopScan(); location.href = HUB; });
 $('closeBtn').addEventListener('click', () => { clearInterval(S.hintTimer); Stage.stop(); location.href = HUB; });
 // the info panel's own cross hides it; the i button brings it back
-$('ncClose').addEventListener('click', () => $('namecard').classList.add('hidden'));
-$('factBtn').addEventListener('click', () => {
+const setInfo = (on) => {
   const nc = $('namecard');
-  nc.classList.remove('hidden', 'pop'); void nc.offsetWidth; nc.classList.add('pop');
-});
+  nc.classList.toggle('hidden', !on);
+  $('factBtn').setAttribute('aria-expanded', String(on));
+  if (on){ nc.classList.remove('pop'); void nc.offsetWidth; nc.classList.add('pop'); }
+};
+$('ncClose').addEventListener('click', () => setInfo(false));
+$('factBtn').addEventListener('click', () => setInfo($('namecard').classList.contains('hidden')));
 $('shutter').addEventListener('click', takePhoto);
 $('photoBack').addEventListener('click', () => show(null));
 $('errBtn').addEventListener('click', () => { $('err').hidden = true; location.reload(); });
