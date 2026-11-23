@@ -199,6 +199,7 @@ $('introClose').addEventListener('click', () => { stopScan(); location.href = HU
 $('scanSkip').addEventListener('click', () => { stopScan(); overlay('guide', false); openIntro(); });
 $('goBtn').addEventListener('click', () => startMasks(false));
 $('previewBtn').addEventListener('click', () => startMasks(true));
+$('guideClose').addEventListener('click', () => { stopScan(); location.href = HUB; });
 $('closeBtn').addEventListener('click', () => { clearInterval(S.hintTimer); Stage.stop(); location.href = HUB; });
 // the info panel's own cross hides it; the i button brings it back
 $('ncClose').addEventListener('click', () => $('namecard').classList.add('hidden'));
