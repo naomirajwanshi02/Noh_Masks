@@ -35,7 +35,6 @@
 <section id="perm" class="screen dim">
   <div class="col center">
     <div class="plate welcome">
-      <span class="corner tl">Fig. 00</span><span class="corner tr">Camera</span>
       <div class="permicon" aria-hidden="true"><svg viewBox="0 0 48 48" width="56" height="56"><rect x="5" y="13" width="38" height="27" rx="5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M17 13l3-5h8l3 5" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="26.5" r="7.5" fill="none" stroke="currentColor" stroke-width="3"/></svg></div>
       <h1>Allow camera access</h1>
       <p>This page needs your camera. Tap the button, then choose <b>Allow</b>.</p>
@@ -47,7 +46,7 @@
 
 <!-- ============ 1 · VIEWFINDER: find the card ============ -->
 <div id="guide" class="overlay">
-  <div class="scan-top plate"><b>Point your camera at the Hannya picture</b><span class="cap">The masks appear as soon as it's found</span></div>
+  <div class="scan-top plate"><b>Point your camera at the Hannya picture</b></div>
   <div class="frame"><i></i><i></i><i></i><i></i><div class="sweep"></div></div>
   <div class="scan-bottom">
     <div class="status" id="scanStatus">Starting camera…</div>
@@ -59,27 +58,24 @@
   </div>
 </div>
 
-<div id="found" class="overlay"><div class="plate badge"><div class="stamp">能</div><b>Found it!</b><span>The mask room is open</span></div></div>
+<div id="found" class="overlay"><div class="plate badge"><b>Found it!</b><span>The mask room is open</span></div></div>
 
 <!-- ============ 2 · WELCOME: turn the camera round ============ -->
 <section id="intro" class="screen dim">
   <div class="col center">
     <div class="plate welcome">
-      <span class="corner tl">Fig. 01</span><span class="corner tr">Noh &amp; Kyogen · 能・狂言</span>
+      <button class="iconbtn introclose" id="introClose" aria-label="Back to Scan to Wear"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
       <img class="hero-mask" id="introMask" src="assets/thumbs/hannya.png" alt="">
       <h1>Wear a Noh or Kyogen mask!</h1>
       <p><b>Noh</b> is Japanese theatre performed <b>since the 1300s</b>, and <b>Kyogen</b> is its funny partner, played on the same stage. Actors in both wear carved wooden masks.</p>
       <ol class="steps">
         <li><b>1</b><span>Let us use your <b>selfie camera</b></span></li>
         <li><b>2</b><span>Pick a mask from the bottom</span></li>
-        <li><b>3</b><span><b>Tilt your head</b> to change its mood</span></li>
-        <li><b>4</b><span>Take a photo!</span></li>
+        <li><b>3</b><span>Take a photo!</span></li>
       </ol>
-      <p class="small">To wear the masks we need your <b>selfie camera</b>. The video stays on this phone: nothing is recorded or sent anywhere.</p>
-      <button class="btn red" id="goBtn">Allow camera &amp; start</button>
+      <button class="btn red" id="goBtn">Start</button>
       <div class="status dark" id="camStatus"></div>
       <button class="link" id="previewBtn">No camera? Look at the masks instead</button>
-      <span class="corner bl">ages 8–14</span><span class="corner br">8 masks</span>
     </div>
   </div>
 </section>
@@ -89,15 +85,15 @@
   <div class="hud-top">
     <div class="hud-left">
     <div class="plate namecard" id="namecard">
-      <span class="corner tl" id="ncFig">Fig. 01</span><span class="corner tr" id="ncRole"></span>
-      <div class="nc-main"><b id="ncName"></b><span class="jp" id="ncJp"></span></div>
+      <button class="nc-close" id="ncClose" aria-label="Hide the info"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button>
+      <div class="nc-main"><b id="ncName"></b></div>
       <div class="nc-blurb" id="ncBlurb"></div>
     </div>
     <div class="hint" id="hint" role="status" aria-live="polite"></div>
     </div>
     <div class="iconcol">
-      <button class="iconbtn" id="closeBtn" aria-label="Back to the scanner"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
-      <button class="iconbtn" id="factBtn" aria-label="Did you know?"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 10.5v6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="7.2" r="1.5" fill="currentColor"/></svg></button>
+      <button class="iconbtn" id="closeBtn" aria-label="Back to Scan to Wear"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
+      <button class="iconbtn" id="factBtn" aria-label="Show the info"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 10.5v6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="7.2" r="1.5" fill="currentColor"/></svg></button>
     </div>
   </div>
 
@@ -121,7 +117,6 @@
 <section id="photo" class="screen dim">
   <div class="col center">
     <div class="plate photocard">
-      <span class="corner tl">Your photo</span><span class="corner tr" id="photoName"></span>
       <img id="photoImg" alt="Your photo wearing a Noh or Kyogen mask">
       <div class="row">
         <a class="btn red small" id="saveBtn" download="noh-mask.jpg">Save</a>

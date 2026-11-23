@@ -83,6 +83,14 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .welcome{padding:34px 20px 30px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:stretch}
 .hero-mask{width:150px;height:150px;object-fit:contain;margin:-6px auto -8px;filter:drop-shadow(0 8px 10px #3b2a1c55);animation:bob 3s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-6px) rotate(2deg)}}
+/* the info panel hides with its own cross and comes back with the i button */
+.namecard{position:relative;padding-right:40px}
+.namecard.hidden{display:none}
+.nc-close{position:absolute;top:8px;right:8px;width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:var(--anatomy-strong);display:grid;place-items:center;cursor:pointer}
+.nc-close:active{transform:scale(.92)}
+/* the welcome card's cross goes back to the scanner */
+.welcome{position:relative}
+.welcome .introclose{position:absolute;top:10px;right:10px;width:40px;height:40px;background:var(--anatomy-card);box-shadow:0 0 0 1.5px var(--anatomy-muted)}
 .welcome h1{margin:0;font-size:clamp(28px,8.5vw,36px);line-height:1.05;font-weight:900;color:var(--anatomy-strong)}
 .welcome p{margin:0 auto;max-width:34ch;font-size:15px}
 .steps{list-style:none;margin:4px 0 6px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;text-align:left}

@@ -126,7 +126,7 @@ function buildTray(){
     b.className = 'chip';
     b.setAttribute('role', 'option');
     b.dataset.id = m.id;
-    b.innerHTML = `<span class="num">${String(i + 1).padStart(2, '0')}</span><img src="assets/thumbs/${m.id}.png" alt="" loading="lazy"><b>${m.name}</b><small>${m.jp}</small><span class="theatre">${m.theatre}</span>`;
+    b.innerHTML = `<img src="assets/thumbs/${m.id}.png" alt="" loading="lazy"><b>${m.name}</b>`;
     b.addEventListener('click', () => select(m.id));
     tray.appendChild(b);
   });
@@ -141,10 +141,7 @@ async function select(id, { quiet = false } = {}){
     c.setAttribute('aria-selected', on);
     if (on) c.scrollIntoView({ behavior: quiet ? 'auto' : 'smooth', inline: 'center', block: 'nearest' });
   });
-  $('ncFig').textContent = `Fig. ${String(m.n).padStart(2, '0')}`;
-  $('ncRole').textContent = `${m.theatre} · ${m.role}`;
   $('ncName').textContent = m.name + (m.alt ? ` / ${m.alt}` : '');
-  $('ncJp').textContent = `${m.jp} · ${m.kana}`;
   $('ncBlurb').textContent = m.blurb;
   $('namecard').classList.remove('pop'); void $('namecard').offsetWidth; $('namecard').classList.add('pop');
   overlay('carving', true);
@@ -155,10 +152,9 @@ async function select(id, { quiet = false } = {}){
 }
 
 function setHint(){
-  // the real Noh technique: tilt up to brighten the mask (terasu), down to cloud it (kumorasu)
   $('hint').innerHTML = document.body.classList.contains('preview')
     ? 'Drag to turn the mask and see it from the side'
-    : 'Tilt your head <b>up</b> and <b>down</b>: the mask’s mood changes, just like on the Noh stage';
+    : 'Pick a mask from the bottom row';
 }
 // After a while, nudge toward the photo button.
 function hintLoop(){
@@ -185,7 +181,6 @@ async function takePhoto(){
   S.photoUrl = URL.createObjectURL(blob);
   const m = BY_ID[S.mask];
   $('photoImg').src = S.photoUrl;
-  $('photoName').textContent = `${m.name} ${m.jp}`;
   $('saveBtn').href = S.photoUrl;
   $('saveBtn').download = `noh-mask-${m.id}.jpg`;
   const file = new File([blob], `noh-mask-${m.id}.jpg`, { type: 'image/jpeg' });
@@ -198,11 +193,19 @@ async function takePhoto(){
 // ------------------------------------------------------------ wiring
 $('permBtn').addEventListener('click', askCamera);
 $('scanRetry').addEventListener('click', openScan);
+// the cross on the welcome card goes back to the Scan to Wear hub, which links to this activity
+const HUB = 'https://naomirajwanshi02.github.io/Scan_To_Wear/';
+$('introClose').addEventListener('click', () => { stopScan(); location.href = HUB; });
 $('scanSkip').addEventListener('click', () => { stopScan(); overlay('guide', false); openIntro(); });
 $('goBtn').addEventListener('click', () => startMasks(false));
 $('previewBtn').addEventListener('click', () => startMasks(true));
-$('closeBtn').addEventListener('click', () => { clearInterval(S.hintTimer); overlay('hud', false); overlay('faceGuide', false); openScan(); });
-$('factBtn').addEventListener('click', () => { const m = BY_ID[S.mask]; toast(`<span class="cap">Did you know?</span><br>${m.fact}`, 6000); });
+$('closeBtn').addEventListener('click', () => { clearInterval(S.hintTimer); Stage.stop(); location.href = HUB; });
+// the info panel's own cross hides it; the i button brings it back
+$('ncClose').addEventListener('click', () => $('namecard').classList.add('hidden'));
+$('factBtn').addEventListener('click', () => {
+  const nc = $('namecard');
+  nc.classList.remove('hidden', 'pop'); void nc.offsetWidth; nc.classList.add('pop');
+});
 $('shutter').addEventListener('click', takePhoto);
 $('photoBack').addEventListener('click', () => show(null));
 $('errBtn').addEventListener('click', () => { $('err').hidden = true; location.reload(); });
